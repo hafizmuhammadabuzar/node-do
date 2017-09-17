@@ -31,14 +31,20 @@
       $('span').html(data);
   });
   $('#new_text').keypress(function(e){
+   console.log(e.keypress);
     var text = $(this).val();
     if (e.keyCode == 13){
-      $(span).html(' ');
+      $('span').html(' ');
     socket.emit('userSays', { userMsg: text });
     }
     else{
     socket.emit('typing', 'Typing...');
     }
+  });
+  $('.btn').click(function(e){
+    var text = $('#new_text').val();
+    $('span').html(' ');
+    socket.emit('userSays', { userMsg: text });
   });
   });
 </script>
