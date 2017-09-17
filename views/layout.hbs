@@ -21,17 +21,15 @@
   $(document).ready(function(){
   socket.on('userMsg', function (data) {
       $('.server_req').append('<br/>'+data.msg);
-    console.log(data);
   });
   socket.on('newUserMsg', function (data) {
+      $('span').html(' ');
       $('.server_req').append('<br/>'+data.newUserMsg);
-    console.log(data);
   });
   socket.on('userTyping', function (data) {
       $('span').html(data);
   });
   $('#new_text').keypress(function(e){
-   console.log(e.keypress);
     var text = $(this).val();
     if (e.keyCode == 13){
       $('span').html(' ');
