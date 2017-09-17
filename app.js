@@ -15,13 +15,14 @@ app.io = io;
 
 io.on('connection', function (socket) {
   socket.emit('news', { serverMsg: 'Welcome to chat window' });
+  socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
   socket.on('userSays', function (data) {
-    socket.emit('userMsg', { msg: data.userMsg});
     socket.broadcast.emit('userMsg', { msg: data.userMsg});
-    console.log(data);
+  });
+  socket.on('typing', function (data) {
+    socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
   });
 });
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -12,10 +12,10 @@
 
   <script>
   
-  var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
+  var socket = io.connect('http://localhost:4000');
+  //var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
   socket.on('news', function (data) {
     $('.server_req').text(data.serverMsg);
-    console.log(data);
   });
 
   $(document).ready(function(){
@@ -23,9 +23,22 @@
       $('.server_req').append('<br/>'+data.msg);
     console.log(data);
   });
-  $('.btn').click(function(){
-    var text = $('#new_text').val();
+  socket.on('newUserMsg', function (data) {
+      $('.server_req').append('<br/>'+data.newUserMsg);
+    console.log(data);
+  });
+  socket.on('userTyping', function (data) {
+      $('span').html(data);
+  });
+  $('#new_text').keypress(function(e){
+    var text = $(this).val();
+    if (e.keyCode == 13){
+      $(span).html(' ');
     socket.emit('userSays', { userMsg: text });
+    }
+    else{
+    socket.emit('typing', 'Typing...');
+    }
   });
   });
 </script>
