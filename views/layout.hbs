@@ -24,7 +24,6 @@
     console.log(data);
   });
   $('.btn').click(function(){
-    alert('clicked');
     var text = $('#new_text').val();
     socket.emit('userSays', { userMsg: text });
   });
