@@ -33,7 +33,8 @@
     var text = $(this).val();
     if (e.keyCode == 13){
       $('span').html(' ');
-    socket.emit('userSays', { userMsg: text });
+      $(this).val('');
+      socket.emit('userSays', { userMsg: text });
     }
     else{
     socket.emit('typing', 'Typing...');
@@ -42,6 +43,7 @@
   $('.btn').click(function(e){
     var text = $('#new_text').val();
     $('span').html(' ');
+    $('#new_text').val('');
     socket.emit('userSays', { userMsg: text });
   });
   });
