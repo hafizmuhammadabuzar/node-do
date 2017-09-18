@@ -12,7 +12,6 @@ var app = express();
 
 app.io = io;
 
-
 io.on('connection', function (socket) {
   socket.emit('news', { serverMsg: 'Welcome to chat window' });
   socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
