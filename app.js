@@ -12,25 +12,28 @@ var app = express();
 
 app.io = io;
 
-// app.get('/cron', function(req, res, next){
-// });
-
-io.on('connection', function (socket) {
+app.get('/cron', function(req, res, next){
   var sql = "insert into rates (rate) values ('12.34')";
   db.query(sql, function (err, result) {
     if (err) throw err;
     // socket create
+    io.on('connection', function (socket) {
       socket.broadcast.emit('newRates', { rates: result.insertId});
+    });
   });
-  socket.emit('news', { serverMsg: 'Welcome to chat window' });
-  socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
-  socket.on('userSays', function (data) {
-    socket.broadcast.emit('userMsg', { msg: data.userMsg});
-  });
-  socket.on('typing', function (data) {
-    socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
-  });
+  res.render('index', {title: 'express'});
 });
+
+// io.on('connection', function (socket) {
+//   socket.emit('news', { serverMsg: 'Welcome to chat window' });
+//   socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
+//   socket.on('userSays', function (data) {
+//     socket.broadcast.emit('userMsg', { msg: data.userMsg});
+//   });
+//   socket.on('typing', function (data) {
+//     socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
+//   });
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
