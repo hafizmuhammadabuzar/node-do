@@ -12,17 +12,17 @@ var app = express();
 
 app.io = io;
 
-// app.get('/cron', function(req, res, next){
-//   var sql = "insert into rates (rate) values ('12.34')";
-//   db.query(sql, function (err, result) {
-//     if (err) throw err;
-//     // socket create
-//     io.on('connection', function (socket) {
-//       socket.broadcast.emit('newRates', { rates: result.insertId});
-//     });
-//    next (null, result.insertId);
-//   });
-// });
+app.get('/cron', function(req, res, next){
+  var sql = "insert into rates (rate) values ('12.34')";
+  db.query(sql, function (err, result) {
+    if (err) throw err;
+    // socket create
+    io.on('connection', function (socket) {
+      socket.broadcast.emit('newRates', { rates: result.insertId});
+    });
+  //  next (null, result.insertId);
+  });
+});
 
 io.on('connection', function (socket) {
   socket.emit('news', { serverMsg: 'Welcome to chat window' });
