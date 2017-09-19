@@ -1,10 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var db = require('./../db_connect');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
+});
+
+router.get('/cron', function (req, res, next) {
+  var sql = "insert into rates (rate) value ('12.34')";
+  db.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log(result);
+    next();
+  });
 });
 
 router.get('/test', function(req, res, next) {
