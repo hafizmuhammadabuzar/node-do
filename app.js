@@ -18,8 +18,7 @@ app.get('/cron', function(req, res, next){
     if (err) throw err;
     // socket create
     io.on('connection', function (socket) {
-      socket.emit('userMsg', { msg: result.insertId});
-      socket.broadcast.emit('userMsg', { msg: result.insertId});
+      socket.broadcast.emit('newRates', { rates: result.insertId});
     });
    next (null, result.insertId);
   });
