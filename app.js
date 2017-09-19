@@ -21,7 +21,7 @@ app.get('/cron', function(req, res, next){
       socket.broadcast.emit('newRates', { rates: result.insertId});
     });
   });
-  res.render('index', {title: 'express'});
+  res.render('index', {title: 'express', data: result});
 });
 
 // io.on('connection', function (socket) {
