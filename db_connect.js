@@ -7,6 +7,9 @@ var con = mysql.createConnection({
   database: "synerg98_node_test"
 });
 
-con.connect();
+con.connect(function(err) {
+  if (err) throw err
+  console.log('Database Connected...')
+});
 
 module.exports = con;
