@@ -6,35 +6,24 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var io = require('socket.io')();
 var index = require('./routes/index');
+var route = require('./routes/test')(io);
 var db = require('./db_connect');
 
 var app = express();
 
 app.io = io;
-
-app.get('/cron', function(req, res, next){
-  var sql = "insert into rates (rate) values ('12.34')";
-  db.query(sql, function (err, result) {
-    if (err) throw err;
-    // socket create
-    io.on('connection', function (socket) {
-      socket.broadcast.emit('newRates', { rates: result.insertId});
-    });
-  });
-  res.render('index', {title: 'express', data: result});
-});
-
-// io.on('connection', function (socket) {
-//   socket.emit('news', { serverMsg: 'Welcome to chat window' });
-//   socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
-//   socket.on('userSays', function (data) {
-//     socket.broadcast.emit('userMsg', { msg: data.userMsg});
-//   });
-//   socket.on('typing', function (data) {
-//     socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
-//   });
-// });
-
+    
+  // io.on('connection', function (socket) {
+  //   socket.emit('news', { serverMsg: 'Welcome to chat window' });
+  //   socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
+  //   socket.on('userSays', function (data) {
+  //     socket.broadcast.emit('userMsg', { msg: data.userMsg});
+  //   });
+  //   socket.on('typing', function (data) {
+  //     socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
+  //   });
+  // });
+    
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -47,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
+app.use('/', route);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

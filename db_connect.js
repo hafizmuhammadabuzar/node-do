@@ -7,9 +7,17 @@ var con = mysql.createConnection({
   database: "synerg98_node_test"
 });
 
-con.connect(function(err) {
+var conLocal = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "node_test"
+});
+
+
+conLocal.connect(function(err) {
   if (err) throw err
   console.log('Database Connected...')
 });
 
-module.exports = con;
+module.exports = conLocal;
