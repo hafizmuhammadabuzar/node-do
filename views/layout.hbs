@@ -12,8 +12,8 @@
 
   <script>
   
-  var socket = io.connect('http://localhost:4000');
-  //var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
+  //var socket = io.connect('http://localhost:4000');
+  var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
   //var socket = io.connect('http://165.227.183.31:4000');
   socket.on('newRates', function (data) {
     console.log(data);
