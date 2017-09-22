@@ -15,9 +15,9 @@ var conLocal = mysql.createConnection({
 });
 
 
-conLocal.connect(function(err) {
+con.connect(function(err) {
   if (err) throw err
   console.log('Database Connected...')
 });
 
-module.exports = conLocal;
+module.exports = con;
