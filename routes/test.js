@@ -16,7 +16,7 @@ var returnRouter = function(io) {
         // socket create
         io.sockets.emit("userMsg", {msg: result.insertId});
       });
-        res.json({msg: 'successfulle saved'});
+        res.json({msg: 'successfully saved'});
     });
 
     return router;
