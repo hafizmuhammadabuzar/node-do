@@ -12,7 +12,7 @@ var sql;
     db.query(sql, function (err, companies) {
       if (err) throw err;      
       var company = '';
-      var result = [];
+      var companiesArray = [];
       
       companies.forEach(function(value){
         if(value.company != company){
@@ -24,12 +24,17 @@ var sql;
             }
           })
 
-          result.push({'company': value.company, 'conversions': conversions});
+          companiesArray.push({'company': value.company, 'conversions': conversions});
         }
 
         company = value.company;
       })
 
+      var result = {
+        status : 'Success',
+        msg : 'Companies Conversions',
+        data: companiesArray
+      }
       res.json(result);
     });
   });
