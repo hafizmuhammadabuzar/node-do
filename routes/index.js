@@ -175,7 +175,7 @@ var returnRouter = function(io) {
                 'low': rate.Low,
             }};
             companiesRates.push(bittrex);
-            ticker.Bittrex = companiesRates;
+            ticker.BitTrex = companiesRates;
           });
 
           callback(null);
