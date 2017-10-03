@@ -15,7 +15,7 @@
   //var socket = io.connect('http://localhost:4000');
   //var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
   var socket = io.connect('http://165.227.183.31:5000');
-  socket.on('newRates', function (data) {
+  socket.on('ticker', function (data) {
     console.log(data);
     $('.server_req').text(data.rates);
   });

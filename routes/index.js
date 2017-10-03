@@ -1,10 +1,8 @@
 var express = require('express');
 var router = express.Router();
-// var request = require('request');
+var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
-var promise = require('promise');
-var request = require('request-promise');
 
 /* GET home page. */
 var returnRouter = function(io) {
@@ -158,6 +156,7 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
 
+        io.sockets.emit('news', {'serverMsg': 'here is route file'});
         var companiesRates = [];
         var currentRates = [];
         var url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
@@ -181,55 +180,50 @@ var returnRouter = function(io) {
 
           callback(null);
         });
-    }, function(callback){
+    }, 
+    function(callback){
       var companiesRates = [];
       var cc = [];
-      var sql = "select company, conversion from company_conversions where company = 'Bitstamp'";
+      var sql = "select company, conversion from company_conversions where company = 'Bitfinex'";
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
         async.forEach(companies, function(cmp, done){
-
-          console.log(cmp.conversion);
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion;
           request.get(link, function(error, request, body){
             if(error){
               callback(error, null);
             }
-
-            if(request.statusCode != 200){
-              console.log('No data in response '+link);
-            }
-            else{
+            // if(request.statusCode != 200){
+            //   console.log(link);
+            // }
+            // else{
               var rates = JSON.parse(body);
 
-              // if(Array.isArray(rates) && rates.length > 0){
-                // console.log(link);
-                var obj = {
-                  [splitConversion]: {
-                    'last': rates.last_price,
-                    'bid': rates.bid,
-                    'ask': rates.ask,
-                    'high': rates.high,
-                    'low': rates.low,
+              var obj = {
+                  [cmp.conversion]: {
+                    'last': parseFloat(rates.last_price),
+                    'bid': parseFloat(rates.bid),
+                    'ask': parseFloat(rates.ask),
+                    'high': parseFloat(rates.high),
+                    'low': parseFloat(rates.low),
                   }};
                   
-                  // console.log(obj);
                   companiesRates.push(obj);
                   ticker.bitfinex = companiesRates;
                   done();
-                  // }
-                }
+                // }
               });
             },function(err){
               callback(null, 'Second');
             });
       });  
-    }
+    },
   ], function(err, c){
       console.log(c);
       console.log('end');
+      io.sockets.emit('ticker', {'rates': ticker});
       res.json(ticker);
     });
 
