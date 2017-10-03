@@ -165,7 +165,8 @@ var returnRouter = function(io) {
           rates = rates.result;
 
           async.forEach(rates, function(rate){
-            var con = rate.MarketName.replace('-','/');
+            var con = rate.MarketName.split('-');
+            con = con[1]+"/"+con[0];
             var bittrex = {
               [con]: {
                 'last': rate.Last,
@@ -183,22 +184,17 @@ var returnRouter = function(io) {
     }, 
     function(callback){
       var companiesRates = [];
-      var cc = [];
       var sql = "select company, conversion from company_conversions where company = 'Bitfinex'";
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
         async.forEach(companies, function(cmp, done){
           var splitConversion = cmp.conversion.replace('/', '');
-          link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion;
+          link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion.toLowerCase();
           request.get(link, function(error, request, body){
             if(error){
               callback(error, null);
             }
-            // if(request.statusCode != 200){
-            //   console.log(link);
-            // }
-            // else{
               var rates = JSON.parse(body);
 
               var obj = {
@@ -213,20 +209,55 @@ var returnRouter = function(io) {
                   companiesRates.push(obj);
                   ticker.Bitfinex = companiesRates;
                   done();
-                // }
               });
             },function(err){
+              console.log('second');
               callback(null, 'Second');
             });
       });  
     },
+    // function(callback){
+    //   var companiesRates = [];
+    //   var sql = "select company, conversion from company_conversions where company = 'Bitstamp'";
+    //   db.query(sql, function (err, companies) {
+    //     if (err) callback(err);
+        
+    //     async.forEach(companies, function(cmp, done){
+    //       var splitConversion = cmp.conversion.replace('/', '');
+    //       link = "https://www.bitstamp.net/api/v2/ticker/"+splitConversion.toLowerCase();
+    //       request.get(link, function(error, request, body){
+    //         if(!error){
+    //           var rates = JSON.parse(body);
+
+    //           var obj = {
+    //               [cmp.conversion]: {
+    //                 'last': parseFloat(rates.last_price),
+    //                 'bid': parseFloat(rates.bid),
+    //                 'ask': parseFloat(rates.ask),
+    //                 'high': parseFloat(rates.high),
+    //                 'low': parseFloat(rates.low),
+    //               }};
+                  
+    //           companiesRates.push(obj);
+    //           ticker.Bitfinex = companiesRates;
+    //           done();
+    //         }
+    //         else{
+    //           done(error);
+    //         }
+    //       });
+    //     },function(err){
+    //       console.log('Third');
+    //       callback(null, 'Third');
+    //     });
+    //   });  
+    // }
   ], function(err, c){
       console.log(c);
       console.log('end');
-      io.sockets.emit('ticker', {'rates': ticker});
+      // io.sockets.emit('ticker', {'rates': ticker});
       res.json(ticker);
     });
-
   });
 
   return router;
