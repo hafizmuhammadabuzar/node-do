@@ -156,7 +156,7 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
 
-        io.sockets.emit('news', {'serverMsg': 'here is route file'});
+        io.sockets.emit('news', {'serverMsg': 'New User Connected'});
         var companiesRates = [];
         var currentRates = [];
         var url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
@@ -175,7 +175,7 @@ var returnRouter = function(io) {
                 'low': rate.Low,
             }};
             companiesRates.push(bittrex);
-            ticker.bittrex = companiesRates;
+            ticker.Bittrex = companiesRates;
           });
 
           callback(null);
@@ -211,7 +211,7 @@ var returnRouter = function(io) {
                   }};
                   
                   companiesRates.push(obj);
-                  ticker.bitfinex = companiesRates;
+                  ticker.Bitfinex = companiesRates;
                   done();
                 // }
               });
