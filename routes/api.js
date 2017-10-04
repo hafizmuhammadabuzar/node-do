@@ -8,7 +8,7 @@ var returnRouter = function(db) {
 var sql;
 
   router.get('/companiesConversions', function(req, res) {
-    sql = "select company, conversion from company_conversions";
+    sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
       if (err) throw err;      
       var company = '';
