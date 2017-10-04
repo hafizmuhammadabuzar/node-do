@@ -3,6 +3,7 @@ var router = express.Router();
 var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
+const fs = require('fs');
 
 /* GET home page. */
 var returnRouter = function(io) {
@@ -149,10 +150,16 @@ var returnRouter = function(io) {
     });
   });
 
+  router.get('/cron/ticker', function(req, res, next){
+    let rawdata = fs.readFileSync('public/data/tickers.json');  
+    let ticker = JSON.parse(rawdata);
+    io.sockets.emit('ticker', {'rates': ticker});
+    res.json(ticker);
+  });
+
   router.get('/ticker', function(req, res, next){
 
     var ticker = {};
-    
     async.waterfall([
       function(callback){
 
@@ -166,11 +173,12 @@ var returnRouter = function(io) {
             var con = rate.MarketName.split('-');
             con = con[1]+"/"+con[0];
             bittrexObj[con] = {
-              'last': rate.Last,
-              'bid': rate.Bid,
-              'ask': rate.Ask,
-              'high': rate.High,
-              'low': rate.Low
+              'last': rate.Last.toString(),
+              'bid': rate.Bid.toString(),
+              'ask': rate.Ask.toString(),
+              'high': rate.High.toString(),
+              'low': rate.Low.toString(),
+              'volume': rate.Volume.toString()
           };
 
             ticker.BitTrex = bittrexObj;
@@ -196,11 +204,12 @@ var returnRouter = function(io) {
               var con = cmp.conversion;
 
               bitfinexObj[cmp.conversion] = {
-                'last': parseFloat(rates.last_price),
-                'bid': parseFloat(rates.bid),
-                'ask': parseFloat(rates.ask),
-                'high': parseFloat(rates.high),
-                'low': parseFloat(rates.low),
+                'last': rates.last_price,
+                'bid': rates.bid,
+                'ask': rates.ask,
+                'high': rates.high,
+                'low': rates.low,
+                'volume': rates.volume
               };  
 
                 ticker.Bitfinex = bitfinexObj;
@@ -227,11 +236,12 @@ var returnRouter = function(io) {
               var rates = JSON.parse(body);
 
               bitstampObj[cmp.conversion] = {
-                'last': parseFloat(rates.last),
-                'bid': parseFloat(rates.bid),
-                'ask': parseFloat(rates.ask),
-                'high': parseFloat(rates.high),
-                'low': parseFloat(rates.low),
+                'last': rates.last,
+                'bid': rates.bid,
+                'ask': rates.ask,
+                'high': rates.high,
+                'low': rates.low,
+                'volume': rates.volume
               };
                   
               ticker.Bitstamp = bitstampObj;
@@ -241,44 +251,44 @@ var returnRouter = function(io) {
           callback(null);
         });
       });  
-    }
-    // function(nextTwo){
-    //   var companiesRates = [];
-    //   var sql = "select company, conversion from company_conversions where company = 'Kraken' limit 1";
-    //   db.query(sql, function (err, companies) {
-    //     if (err) nextTwo(err);
+    },
+    function(callback){
+      var krakenObj = {};
+      var sql = "select company, conversion, keyName from company_conversions where company = 'Kraken'";
+      db.query(sql, function (err, companies) {
+        if (err) callback(err);
         
-    //     async.forEach(companies, function(cmp, complete){
-    //       var splitConversion = cmp.conversion.replace('/', '');
-    //       link = "https://www.bitstamp.net/api/v2/ticker/"+splitConversion.toLowerCase();
-    //       request.get(link, function(error, request, body){
-    //         if(error){
-    //           nextTwo(error, null);
-    //         }
-    //           var rates = JSON.parse(body);
+        async.forEach(companies, function(cmp, complete){
+          var conversion = cmp.keyName;
+          link = "https://api.kraken.com/0/public/Ticker?pair="+conversion;
+          request.get(link, function(error, request, body){
+            if(error){
+              callback(error, null);
+            }
+              var rates = JSON.parse(body);
+              var rates = rates.result[conversion];
 
-    //           var obj = {
-    //               [cmp.conversion]: {
-    //                 'last': parseFloat(rates.last),
-    //                 'bid': parseFloat(rates.bid),
-    //                 'ask': parseFloat(rates.ask),
-    //                 'high': parseFloat(rates.high),
-    //                 'low': parseFloat(rates.low),
-    //               }};
+              krakenObj[cmp.conversion] = {
+                'last': rates.c[0],
+                'bid': rates.b[0],
+                'ask': rates.a[0],
+                'high': rates.h[0],
+                'low': rates.l[0],
+                'volume': rates.v[0]
+              };
                   
-    //             companiesRates.push(obj);
-    //             ticker.Kraken = companiesRates;
-    //             complete();
-    //         });
-    //     },function(err){
-    //       nextTwo(null, 'Third');
-    //     });
-    //   });  
-    // }
+              ticker.Kraken = krakenObj;
+              complete();
+            });
+        },function(err){
+          callback(null);
+        });
+      });  
+    }
   ], function(err){
-      console.log('end');
-      // io.sockets.emit('ticker', {'rates': ticker});
-      res.json(ticker);
+      let data = JSON.stringify(ticker);  
+      fs.writeFileSync('public/data/tickers.json', data); 
+      res.send('Ticker Sent');
     });
   });
 
