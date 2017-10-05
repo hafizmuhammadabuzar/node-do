@@ -3,6 +3,7 @@ var router = express.Router();
 var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
+var rp = require('request-promise');
 const fs = require('fs');
 
 /* GET home page. */
@@ -98,54 +99,45 @@ var returnRouter = function(io) {
 
   router.get('/daily/rates', function(req, res, next){
     
-    var values = [];
     var urls = [];
+    var values = {};
 
     async.waterfall([
-      function(callback) {
-        var sql = "select company, conversion from company_conversions where company= 'Bitfinex'";
-        db.query(sql, function (err, companies) {
-          if (err) throw err;
+      function(callback){
+        
+        var filteredArray = {};        
+        let company = 'BitTrex';
+        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
 
-          async.forEach(companies, function(cmp){
+        db.query(sql, function (err, companies) {
+          if (err) callback(err);
+          
+          async.forEach(companies, function(cmp, done){
             var conv = cmp.conversion.split('/');
             const timestamp = Math.floor(new Date() / 1000);
-            link = "https://min-api.cryptocompare.com/data/histoday?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=100&toTs="+timestamp+"&e="+cmp.company;
-  
-            urls.push({'link': link, 'company': cmp.company, 'conversion': cmp.conversion});
-          });
+            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
 
-          callback(null);
-        }); 
-      },
-      function(callback) {
+            request.get(link, function(error, request, body){
+              if(error){
+                callback(error, null);
+              }
 
-        async.forEach(urls, function(url, done){
+                var rates = JSON.parse(body);
+                rates = rates.Data;
 
-          request.get(url.link, function(err, response, body){
-            var rates = JSON.parse(body);
-            rates = rates.Data;
-            
-            if(Array.isArray(rates) && rates.length > 0){
-              async.forEach(rates, function(rate){
-                if(rate.close != 0){
-                  var v = [rate.time, rate.close, rate.high, rate.low, rate.open, rate.volumefrom, rate.volumeto, url.company, url.conversion];
-                  values.push(v);
-                }
-              });
-              var sql = "insert into daily_rates (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
-              var query = db.query(sql, [values], function (err, response) {
-                if (err) throw err;
+                filteredArray[cmp.conversion] = rates.filter(rate => rate.close != 0);
+                values[cmp.company] = filteredArray;
                 done();
               });
-            }
+            },function(err){
+              let filePath = 'public/data/'+company+'/minute.json';
+              fs.writeFileSync(filePath, JSON.stringify(filteredArray));
+              callback(true);
           });
-        }, function(err){
-          if(err) throw err;
-          callback(null, 'Test');
-        });
+        });  
       }
     ], function(error, c) {
+      console.log(c);
       res.json({'msg': 'Successfully Saved'});
     });
   });

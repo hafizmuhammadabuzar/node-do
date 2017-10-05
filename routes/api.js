@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var validator = require('express-validator');
+var fs = require('fs');
 router.use(validator());
 
 /* GET home page. */
@@ -48,16 +49,26 @@ var sql;
     if(v_errors){
       res.json(v_errors);
     }
-    var table = req.params.type+"_rates";
-    sql = "select time, close, high, low, open from "+table+" where company='"+req.query.company+"' and conversion='"+req.query.conversion+"'";
-    var query = db.query(sql, function(err, data){
-      var result = {
-        status : 'Success',
-        msg : 'Daily History',
-        data: data
-      }
-      res.json(result);
-    });
+
+    let rawdata = fs.readFileSync('public/data/'+req.query.company+'/'+req.params.type+'.json');  
+    let histo = JSON.parse(rawdata);
+    let result = {
+      status : 'Success',
+      msg : req.query.company+' History',
+      data: histo[req.query.conversion]
+    }
+    res.json(result);
+
+    // var table = req.params.type+"_rates";
+    // sql = "select time, close, high, low, open from "+table+" where company='"+req.query.company+"' and conversion='"+req.query.conversion+"'";
+    // var query = db.query(sql, function(err, data){
+      // var result = {
+      //   status : 'Success',
+      //   msg : 'Daily History',
+      //   data: data
+      // }
+    //   res.json(result);
+    // });
   });
 
   return router;
