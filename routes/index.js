@@ -3,7 +3,6 @@ var router = express.Router();
 var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
-var rp = require('request-promise');
 const fs = require('fs');
 
 /* GET home page. */
@@ -97,41 +96,58 @@ var returnRouter = function(io) {
     res.json({msg: 'Saved'});
   });
 
-  router.get('/daily/rates', function(req, res, next){
+  router.get('/history/:type', function(req, res, next){
     
-    var urls = [];
-    var values = {};
-
     async.waterfall([
       function(callback){
         
-        var filteredArray = {};        
-        let company = 'BitTrex';
-        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        let company = req.query.company;
+        let type = req.params.type;
+        let fileName = type=='day' ? 'daily' : type;
+        let cron = req.query.cron;
 
+        var jsonData = {};
+        var filteredArray = {};
+        
+        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        
         db.query(sql, function (err, companies) {
           if (err) callback(err);
+          
+          if(cron == 1){
+            let rawdata = fs.readFileSync('public/data/'+company+'/'+fileName+'.json');  
+            jsonData = JSON.parse(rawdata);
+          }
           
           async.forEach(companies, function(cmp, done){
             var conv = cmp.conversion.split('/');
             const timestamp = Math.floor(new Date() / 1000);
-            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
-
-            request.get(link, function(error, request, body){
+            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
+            
+            var ip = req.connection.remoteAddress;
+            
+            request.get({url: link, localAdress: ip}, function(error, request, body){
               if(error){
                 callback(error, null);
               }
+              var rates = JSON.parse(body);
+              rates = rates.Data;
 
-                var rates = JSON.parse(body);
-                rates = rates.Data;
+              let conversion = cmp.conversion;
+              if(cron == 1){
+                let reqArray = jsonData[conversion];
+                reqArray.push(rates[rates.length-1]);
+                jsonData[cmp.conversion] = reqArray;
+              }
+              else{
+                jsonData[cmp.conversion] = rates.filter(rate => rate.close != 0);
+              }
 
-                filteredArray[cmp.conversion] = rates.filter(rate => rate.close != 0);
-                values[cmp.company] = filteredArray;
-                done();
-              });
-            },function(err){
-              let filePath = 'public/data/'+company+'/minute.json';
-              fs.writeFileSync(filePath, JSON.stringify(filteredArray));
+              done();
+            });
+          },function(err){
+              fs.writeFileSync('public/data/'+company+'/'+fileName+'.json', JSON.stringify(jsonData));  
+
               callback(true);
           });
         });  
