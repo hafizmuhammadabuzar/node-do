@@ -103,7 +103,7 @@ var returnRouter = function(io) {
         
         let company = req.query.company;
         let type = req.params.type;
-        let fileName = type=='day' ? 'daily' : type;
+        let fileName = (type=='day') ? 'daily' : type;
         let cron = req.query.cron;
 
         var jsonData = {};
@@ -113,11 +113,13 @@ var returnRouter = function(io) {
         
         db.query(sql, function (err, companies) {
           if (err) callback(err);
-          
+           
           if(cron == 1){
             let rawdata = fs.readFileSync('public/data/'+company+'/'+fileName+'.json');  
             jsonData = JSON.parse(rawdata);
           }
+
+          // console.log(companies); process.exit();
           
           async.forEach(companies, function(cmp, done){
             var conv = cmp.conversion.split('/');
@@ -148,12 +150,12 @@ var returnRouter = function(io) {
           },function(err){
               fs.writeFileSync('public/data/'+company+'/'+fileName+'.json', JSON.stringify(jsonData));  
 
-              callback(true);
+              callback(null);
           });
         });  
       }
-    ], function(error, c) {
-      console.log(c);
+    ], function(error) {
+      console.log('End');
       res.json({'msg': 'Successfully Saved'});
     });
   });
