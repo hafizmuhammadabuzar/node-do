@@ -119,8 +119,6 @@ var returnRouter = function(io) {
             jsonData = JSON.parse(rawdata);
           }
 
-          // console.log(companies); process.exit();
-          
           async.forEach(companies, function(cmp, done){
             var conv = cmp.conversion.split('/');
             const timestamp = Math.floor(new Date() / 1000);
@@ -169,7 +167,10 @@ var returnRouter = function(io) {
 
   router.get('/ticker', function(req, res, next){
 
-    var ticker = {};
+    let rawdata = fs.readFileSync('public/data/tickers.json');  
+    let ticker = JSON.parse(rawdata);
+
+    // var ticker = {};
     async.waterfall([
       function(callback){
 
@@ -199,7 +200,7 @@ var returnRouter = function(io) {
     },
     function(callback){
       var bitfinexObj = {};
-      var sql = "select company, conversion from company_conversions where company = 'Bitfinex'";
+      var sql = "select company, conversion from company_conversions where company = 'Bitfinex' limit 1";
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
@@ -213,17 +214,22 @@ var returnRouter = function(io) {
               var rates = JSON.parse(body);
               var con = cmp.conversion;
 
-              bitfinexObj[cmp.conversion] = {
-                'last': rates.last_price,
-                'bid': rates.bid,
-                'ask': rates.ask,
-                'high': rates.high,
-                'low': rates.low,
-                'volume': rates.volume
-              };  
-
+              if(rates.bid != null){
+                bitfinexObj[cmp.conversion] = {
+                  'last': rates.last_price,
+                  'bid': rates.bid,
+                  'ask': rates.ask,
+                  'high': rates.high,
+                  'low': rates.low,
+                  'volume': rates.volume
+                };  
+  
                 ticker.Bitfinex = bitfinexObj;
                 done();
+              }
+              else{
+                callback(null);
+              }
             });
           },function(err){
             callback(null);
