@@ -200,7 +200,7 @@ var returnRouter = function(io) {
     },
     function(callback){
       var bitfinexObj = {};
-      var sql = "select company, conversion from company_conversions where company = 'Bitfinex' limit 1";
+      var sql = "select company, conversion from company_conversions where company = 'Bitfinex'";
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
