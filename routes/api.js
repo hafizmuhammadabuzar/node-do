@@ -4,12 +4,18 @@ var validator = require('express-validator');
 var fs = require('fs');
 var request = require('request');
 var async = require('async');
+var androidPush = require('../helpers/android-push');
 router.use(validator());
 
 /* GET home page. */
 var returnRouter = function(db) {
 var sql;
 var result = {};
+
+router.get('/test', function(req, res, next){
+  res.send(androidPush('here'));
+
+});
 
   router.get('/companiesConversions', function(req, res) {
     sql = "select company, conversion from company_conversions order by company";
@@ -234,7 +240,7 @@ var result = {};
           saveQuery = "insert into tokens (company, conversion, token, device_id, price, is_less, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+device_id+"', '"+price+"', "+type+", '"+date+"')";
         }
         else{
-          saveQuery = "update token set company = '"+company+"', conversion = '"+conversion+"', price = '"+price+"', is_less = "+type+", date = '"+date+"', status = "+status+", where id = "+id;
+          saveQuery = "update tokens set company = '"+company+"', conversion = '"+conversion+"', price = '"+price+"', is_less = "+type+", date = '"+date+"', status = "+status+", where id = "+id;
         }
         db.query(saveQuery, function(err, data){
           if(err){
