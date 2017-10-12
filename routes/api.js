@@ -75,6 +75,7 @@ router.get('/test', function(req, res, next){
     req.checkQuery('conversion', 'Combination required').notEmpty();
     req.checkQuery('price', 'Price required').notEmpty();
     req.checkQuery('token', 'Token required').notEmpty();
+    req.checkQuery('device_id', 'Device Id required').notEmpty();
     req.checkQuery('type', 'Type required').notEmpty();
     req.checkQuery('date', 'Date required').notEmpty();
     req.checkQuery('status', 'Status required').notEmpty();
@@ -96,7 +97,7 @@ router.get('/test', function(req, res, next){
 
     async.waterfall([
       function(callback){
-        sql = "select * from tokens where token = '"+token+"' and company = '"+company+"' and conversion = '"+conversion+"' and price = "+price+" and status ="+status+" and is_less ="+type;
+        sql = "select * from tokens where token = '"+token+"' and device_id = '"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and price = "+price+" and status ="+status+" and is_less ="+type;
         db.query(sql, function(err, data){
           if(err){
             result.status = 'Error';
