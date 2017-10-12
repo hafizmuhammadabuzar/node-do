@@ -13,7 +13,7 @@ var sql;
 var result = {};
 
 router.get('/test', function(req, res, next){
-  res.send(androidPush('here'));
+  res.send(androidPush());
 
 });
 
@@ -283,7 +283,7 @@ router.get('/test', function(req, res, next){
           result.data = alerts;
         }
         else{
-          result.status = 'Error';
+          result.status = 'Success';
           result.msg = 'No record found';
         }
       }
