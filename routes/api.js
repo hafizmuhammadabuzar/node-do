@@ -264,11 +264,19 @@ router.get('/test', function(req, res, next){
 
   router.get('/getMyAlerts', function(req, res, next){
 
+    req.checkQuery('token', 'Token required').notEmpty();
+    req.checkQuery('device_id', 'Device Id required').notEmpty();
+
+    var v_errors = req.validationErrors();
+    if(v_errors){
+      res.json(v_errors);
+    }
+
     let token = req.query.token;
     let device_id = req.query.device_id;
 
-    sql ="select * from tokens where ";
-    sql += (token != undefined) ? "token = '"+token+"'" : "device_id = '"+device_id+"'";
+    sql ="select * from tokens where token = '"+token+"' and device_id = '"+device_id+"'";
+    // sql += (token != undefined) ? "token = '"+token+"'" : "device_id = '"+device_id+"'";
     
     db.query(sql, function(err, alerts){
       if(err){
@@ -278,13 +286,11 @@ router.get('/test', function(req, res, next){
       }
       else{
         if(alerts.length > 0){
-          result = {};
           result.status = 'Success';
           result.msg = 'User Alerts';
           result.data = alerts;
         }
         else{
-          result = {};
           result.status = 'Success';
           result.msg = 'No record found';
         }
