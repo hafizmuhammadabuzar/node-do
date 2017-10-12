@@ -86,6 +86,7 @@ router.get('/test', function(req, res, next){
     }
 
     let token = req.query.token;
+    let device_id = req.query.device_id;
     let company = req.query.company;
     let conversion = req.query.conversion;
     let price = req.query.price;
