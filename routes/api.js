@@ -167,7 +167,7 @@ router.get('/test', function(req, res, next){
           });
         }
         else{
-          sql = "update tokens set company = '"+company+"', conversion = '"+conversion+"', price = '"+price+"', is_less = "+type+", date = '"+date+"', status = "+status+" where id = "+id;
+          sql = "update tokens set device_id = '"+device_id+"', company = '"+company+"', conversion = '"+conversion+"', price = '"+price+"', is_less = "+type+", date = '"+date+"', status = "+status+" where id = "+id;
 
           db.query(sql, function(err, data){
             if(err){
