@@ -278,11 +278,13 @@ router.get('/test', function(req, res, next){
       }
       else{
         if(alerts.length > 0){
+          result = {};
           result.status = 'Success';
           result.msg = 'User Alerts';
           result.data = alerts;
         }
         else{
+          result = {};
           result.status = 'Success';
           result.msg = 'No record found';
         }
