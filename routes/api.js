@@ -294,6 +294,7 @@ router.get('/test', function(req, res, next){
         else{
           result.status = 'Success';
           result.msg = 'No record found';
+          result.data = [];
         }
       }
       
