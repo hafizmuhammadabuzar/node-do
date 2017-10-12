@@ -150,7 +150,7 @@ router.get('/test', function(req, res, next){
   
             let jsonData = JSON.parse(response.body);  
             
-            saveQuery = "insert into tokens (company, conversion, token, player_id, price, is_less, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+jsonData.id+"', '"+price+"', "+type+", '"+date+"')";
+            saveQuery = "insert into tokens (company, conversion, token, player_id, device_id, price, is_less, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+jsonData.id+"' device_id = '"+device_id+"', '"+price+"', "+type+", '"+date+"')";
             db.query(saveQuery, function(err, data){
               if(err){
                 result.status = 'Error';''
