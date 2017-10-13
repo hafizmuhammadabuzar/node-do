@@ -152,7 +152,6 @@ var returnRouter = function(io) {
             });
           },function(err){
               fs.writeFileSync('public/data/'+company+'/'+fileName+'.json', JSON.stringify(jsonData));  
-
               callback(null);
           });
         });  
