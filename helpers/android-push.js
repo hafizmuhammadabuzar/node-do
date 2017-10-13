@@ -1,8 +1,9 @@
 var request = require('request');
 
-var androidPush = function(){
+var androidPush = function(token, msg){
     var header, fields, options = {};
     let APP_KEY = 'AIzaSyDetxE_V8sv8dZmlAPJyMVNpoNuhsUnDPQ';
+    let id = [token];
     
     header = {
         'Authorization': "key="+APP_KEY,
@@ -16,8 +17,9 @@ var androidPush = function(){
         }
     };
 
+    // 'registration_ids': ['APA91bGTudwtLuOQlDc3gcJxZfHSFFXcv-e5uoWuOGidzO2bg4KuATpvztgmMYyIarq_V-DFoKNmgXvCPUZRFuAodX9AViWSbMMcO77YlleMjhpcjYcAVMnRBQP-rZmmx9VFwY_ku-WR'],
     fields = {
-        'registration_ids': ['APA91bGTudwtLuOQlDc3gcJxZfHSFFXcv-e5uoWuOGidzO2bg4KuATpvztgmMYyIarq_V-DFoKNmgXvCPUZRFuAodX9AViWSbMMcO77YlleMjhpcjYcAVMnRBQP-rZmmx9VFwY_ku-WR'],
+        'registration_ids': id,
         'data': msg
     };
     options = {
@@ -28,7 +30,8 @@ var androidPush = function(){
 
     request.post(options, function(err, response){
         if(err) throw err;
-        return response;
+        console.log(response);
+        return JSON.stringify(response);
     });
 }
 

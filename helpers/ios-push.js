@@ -1,41 +1,44 @@
 var request = require('request');
 
-var androidPush = function(){
+var iosPush = function(token, msg){
     var header, fields, options = {};
-    let APP_KEY = 'AIzaSyDetxE_V8sv8dZmlAPJyMVNpoNuhsUnDPQ';
+
+    let titleText, msgText;
+    let playerId = [token];
+
+    titleText = 'Dear User';
+    msgText = msg;
     
-    headers = {
+    header = {
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": "Basic YjBjYjMxYjktMDg0OC00Njc4LThhODYtZTQzZWUzNmE4NDlm"
     };
 
-    var msg = {
-        'notification': {
-            'title': 'Dear User',
-            'message': 'Have a nice day!'
-        }
-    };
-
     fields = {
-        'app_id': "725fc226-b421-4667-a208-2704ff8e8a58",
-        // 'include_player_ids' => ["ffbcf7eb-a1a6-4903-8a0b-726acab42501"],
-        'included_segments': array("All"),
-        'contents': $content,
-        'heading': $title,
-        'data': {'title': $noti_title, 'body' : $msg},
+        'app_id': "e2d795a1-20a2-43f6-ba23-9c7c3bfaa6d4",
+        'include_player_ids': playerId,
+        //'included_segments': ["All"],
+        'contents': {'en': msgText},
+        'heading': {'en': titleText},
+        'data': {'title': titleText, 'body' : msgText},
         'ios_badgeType': 'SetTo',
         'ios_badgeCount': 1,
     };
     options = {
-        uri: 'https://android.googleapis.com/gcm/send',
+        uri: 'https://onesignal.com/api/v1/notifications',
+        host: "onesignal.com",
+        port: 443,
+        path: "/api/v1/notifications",
+        method: "POST",
         headers: header,
         body: JSON.stringify(fields)
     };
 
     request.post(options, function(err, response){
         if(err) throw err;
+        // console.log(response);
         return response;
     });
 }
 
-module.exports = androidPush;
+module.exports = iosPush;

@@ -5,6 +5,7 @@ var fs = require('fs');
 var request = require('request');
 var async = require('async');
 var androidPush = require('../helpers/android-push');
+var iosPush = require('../helpers/ios-push');
 router.use(validator());
 
 /* GET home page. */
@@ -13,8 +14,9 @@ var sql;
 var result = {};
 
 router.get('/test', function(req, res, next){
-  res.send(androidPush());
-
+  var send = androidPush();
+  // var send = iosPush();
+  res.json(send);
 });
 
   router.get('/companiesConversions', function(req, res) {

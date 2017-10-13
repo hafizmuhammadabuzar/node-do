@@ -4,9 +4,13 @@ var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
 const fs = require('fs');
+var androidPush = require('../helpers/android-push');
+var iosPush = require('../helpers/ios-push');
 
 /* GET home page. */
 var returnRouter = function(io) {
+  var sql;
+
   router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
   });
@@ -126,6 +130,7 @@ var returnRouter = function(io) {
             
             var ip = req.connection.remoteAddress;
             
+            console.log(link);
             request.get({url: link, localAdress: ip}, function(error, request, body){
               if(error){
                 callback(error, null);
@@ -306,6 +311,127 @@ var returnRouter = function(io) {
       fs.writeFileSync('public/data/tickers.json', data); 
       res.send('Ticker Sent');
     });
+  });
+
+  router.get('/sendAlerts', function(req, res, next){
+
+    let rawdata = fs.readFileSync('public/data/tickers.json');
+    let jsonData = JSON.parse(rawdata);
+    let allTokens = [];
+    
+    async.waterfall([
+      function(callback){
+        let tokens = [];
+        let companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, complete){
+    
+          let pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NOT NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                allTokens.push(tokenData[0].id);
+                let msg = cmp+" "+key+" is now above then you criteria";
+                iosPush(tokenData[0].player_id, msg);
+                tokens.push(tokenData[0].player_id);
+              }
+              done();
+            });
+          }, function(tokens){
+            complete();
+          });
+        }, function(tokens){
+          callback(null);
+        });
+
+      },
+      function(callback){
+        let tokens = [];
+        let companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, complete){
+    
+          let pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                allTokens.push(tokenData[0].id);
+                let msg = cmp+" "+key+" is now above then you criteria";
+                androidPush(tokenData[0].token, msg);
+                tokens.push(tokenData[0].token);
+              }
+              done();
+            });
+          }, function(tokens){
+            complete();
+          });
+        }, function(tokens){
+          callback(null);
+        });
+      },
+      function(callback){
+        let tokens = [];
+        let companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, complete){
+    
+          let pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NOT NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                allTokens.push(tokenData[0].id);
+                let msg = cmp+" "+key+" is now below then you criteria";
+                iosPush(tokenData[0].player_id, msg);
+                tokens.push(tokenData[0].player_id);
+              }
+              done();
+            });
+          }, function(tokens){
+            complete();
+          });
+        }, function(tokens){
+          callback(null);
+        });
+
+      },
+      function(callback){
+        let tokens = [];
+        let companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, complete){
+    
+          let pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                allTokens.push(tokenData[0].id);
+                let msg = cmp+" "+key+" is now above then you criteria";
+                androidPush(tokenData[0].token, msg);
+                tokens.push(tokenData[0].token);
+              }
+              done();
+            });
+          }, function(tokens){
+
+            complete();
+          });
+        }, function(tokens){
+          callback(null);
+        });
+      }
+    ], function(err){
+      console.log('end');
+      res.json(allTokens);
+    });
+
   });
 
   return router;
