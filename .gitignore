@@ -2,3 +2,7 @@ node_modules/*
 .vscode/*
 bin/www
 db_connect.js
+Public/data/Bitstamp
+Public/data/Bitfinex
+Public/data/BitTrex
+Public/data/Kraken
