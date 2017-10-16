@@ -151,6 +151,63 @@ var returnRouter = function(io) {
     });
   });
 
+  router.get('/cron/history/minute', function(req, res, next){
+    
+    var values = [];
+    var graphRates = [];
+    var conversion = [];
+    let company = req.query.company;
+
+    async.waterfall([
+      function(callback){
+        
+        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        
+        db.query(sql, function (err, companies) {
+          if (err) callback(err);
+          
+          async.forEach(companies, function(cmp, done){
+            
+            var conv = cmp.conversion.split('/');
+            const timestamp = Math.floor(new Date() / 1000);
+            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
+            
+            var ip = req.connection.remoteAddress;
+            
+            request.get({url: link, localAdress: ip}, function(error, request, body){
+              if(error){
+                callback(error, null);
+              }
+              var rates = JSON.parse(body);
+              rates = rates.Data;
+              graphRates.push(rates[rates.length-1]);
+              // conversion.push(conv);
+
+              v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
+              values.push(v);
+
+              done();
+            });
+          },function(err){
+              callback(null);
+          });
+        });  
+      },
+      function(callback){
+
+        sql = "insert into minute_rates (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
+        db.query(sql, [values], function(err, saveResult){
+          if(err) throw err;
+          console.log(saveResult);
+          callback();
+        });
+      }
+    ], function(error) {
+      console.log('End');
+      res.json({'msg': 'Successfully Saved'});
+    });
+  });
+
   router.get('/cron/ticker', function(req, res, next){
     let rawdata = fs.readFileSync('public/data/tickers.json');  
     let ticker = JSON.parse(rawdata);
@@ -422,63 +479,6 @@ var returnRouter = function(io) {
       });
       console.log('end');
       res.json(allTokens);
-    });
-  });
-
-  router.get('/makehistory/:type', function(req, res, next){
-    
-    let company = req.query.company;
-    let type = req.params.type;
-    let dirName = (type=='day') ? 'daily' : type;
-    let jsonData = [];
-
-    async.waterfall([
-      function(callback){
-        
-        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
-        
-        db.query(sql, function (err, companies) {
-          if (err) throw err;
-          callback(null, companies);
-        });  
-      },
-      function(companies, callback){
-        async.forEach(companies, function(cmp, done){
-          
-          var conv = cmp.conversion.split('/');
-          let filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-
-          const timestamp = Math.floor(new Date() / 1000);
-          link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
-          
-          var ip = req.connection.remoteAddress;
-          
-          request.get({url: link, localAdress: ip}, function(error, request, body){
-            if(error) res.json(error);
-
-            var rates = JSON.parse(body);
-            rates = rates.Data;
-            if(rates.length > 0){
-              console.log('in');
-              // jsonData.push(rates);
-              fs.writeFileSync(filePath, JSON.stringify(rates)); 
-            }
-            else{
-              console.log('out');
-              console.log(link);
-            }
-          }, function(err){
-            if(err) throw err;
-            done();
-          });
-        },function(err){
-            if(err) throw err;
-            callback(null);
-        });
-      }
-    ], function(error) {
-      console.log('End');
-      res.json({'msg': 'Successfully Saved'});
     });
   });
 

@@ -60,18 +60,40 @@ router.get('/test', function(req, res, next){
     if(v_errors){
       res.json(v_errors);
     }
-    
-    var conv = req.query.conversion.split('/');
 
-    let rawdata = fs.readFileSync('public/data/'+req.query.company+'/'+req.params.type+'/'+conv[0]+'-'+conv[1]+'.json');  
-    let histo = JSON.parse(rawdata);
-    let result = {
-      status : 'Success',
-      msg : req.query.company+' History',
-    }
+    let company = req.query.company;
+    let type = req.params.type;
+    let conversion = req.query.conversion;
     
-    result.data = ('Data' in histo) ? histo.Data : histo;
-    res.json(result);
+    if(req.params.type == 'minute'){
+      console.log('here');
+      sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
+      db.query(sql, function(err, ratesData){
+        if(err) throw err;
+        console.log(ratesData);
+        let result = {
+          status : 'Success',
+          msg : company+' History',
+          data: ratesData
+        }
+
+        res.json(result);
+      });
+    }
+    else{
+      var conv = req.query.conversion.split('/');
+  
+      let rawdata = fs.readFileSync('public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json');  
+      let histo = JSON.parse(rawdata);
+      let result = {
+        status : 'Success',
+        msg : req.query.company+' History',
+      }
+      
+      result.data = ('Data' in histo) ? histo.Data : histo;
+
+      res.json(result);
+    }
   });
 
   router.get('/addIosToken', function(req, res, next){
