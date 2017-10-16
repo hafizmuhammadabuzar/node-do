@@ -107,51 +107,40 @@ var returnRouter = function(io) {
         
         let company = req.query.company;
         let type = req.params.type;
-        let fileName = (type=='day') ? 'daily' : type;
-        let cron = req.query.cron;
-
-        var jsonData = {};
-        var filteredArray = {};
+        let dirName = (type=='day') ? 'daily' : type;
         
         var sql = "select company, conversion from company_conversions where company = '"+company+"'";
         
         db.query(sql, function (err, companies) {
           if (err) callback(err);
-           
-          if(cron == 1){
-            let rawdata = fs.readFileSync('public/data/'+company+'/'+fileName+'.json');  
-            jsonData = JSON.parse(rawdata);
-          }
-
+          
           async.forEach(companies, function(cmp, done){
+            
             var conv = cmp.conversion.split('/');
+            
+            let filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+            let rawdata = fs.readFileSync(filePath);
+            let jsonData = JSON.parse(rawdata);
+            jsonData = jsonData.Data;
+
             const timestamp = Math.floor(new Date() / 1000);
-            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
+            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
             
             var ip = req.connection.remoteAddress;
             
-            console.log(link);
             request.get({url: link, localAdress: ip}, function(error, request, body){
               if(error){
                 callback(error, null);
               }
               var rates = JSON.parse(body);
               rates = rates.Data;
-
-              let conversion = cmp.conversion;
-              if(cron == 1){
-                let reqArray = jsonData[conversion];
-                reqArray.push(rates[rates.length-1]);
-                jsonData[cmp.conversion] = reqArray;
-              }
-              else{
-                jsonData[cmp.conversion] = rates.filter(rate => rate.close != 0);
-              }
+              jsonData.push(rates[rates.length-1]);
+              
+              fs.writeFileSync(filePath, JSON.stringify(jsonData));  
 
               done();
             });
           },function(err){
-              fs.writeFileSync('public/data/'+company+'/'+fileName+'.json', JSON.stringify(jsonData));  
               callback(null);
           });
         });  
@@ -334,14 +323,14 @@ var returnRouter = function(io) {
                 allTokens.push(tokenData[0].id);
                 let msg = cmp+" "+key+" is now above then you criteria";
                 iosPush(tokenData[0].player_id, msg);
-                tokens.push(tokenData[0].player_id);
+                // tokens.push(tokenData[0].player_id);
               }
               done();
             });
-          }, function(tokens){
+          }, function(allTokens){
             complete();
           });
-        }, function(tokens){
+        }, function(allTokens){
           callback(null);
         });
 
@@ -361,14 +350,14 @@ var returnRouter = function(io) {
                 allTokens.push(tokenData[0].id);
                 let msg = cmp+" "+key+" is now above then you criteria";
                 androidPush(tokenData[0].token, msg);
-                tokens.push(tokenData[0].token);
+                // tokens.push(tokenData[0].token);
               }
               done();
             });
-          }, function(tokens){
+          }, function(allTokens){
             complete();
           });
-        }, function(tokens){
+        }, function(allTokens){
           callback(null);
         });
       },
@@ -387,14 +376,14 @@ var returnRouter = function(io) {
                 allTokens.push(tokenData[0].id);
                 let msg = cmp+" "+key+" is now below then you criteria";
                 iosPush(tokenData[0].player_id, msg);
-                tokens.push(tokenData[0].player_id);
+                // tokens.push(tokenData[0].player_id);
               }
               done();
             });
-          }, function(tokens){
+          }, function(allTokens){
             complete();
           });
-        }, function(tokens){
+        }, function(allTokens){
           callback(null);
         });
 
@@ -414,23 +403,83 @@ var returnRouter = function(io) {
                 allTokens.push(tokenData[0].id);
                 let msg = cmp+" "+key+" is now above then you criteria";
                 androidPush(tokenData[0].token, msg);
-                tokens.push(tokenData[0].token);
+                // tokens.push(tokenData[0].token);
               }
               done();
             });
-          }, function(tokens){
-
+          }, function(allTokens){
             complete();
           });
-        }, function(tokens){
+        }, function(allTokens){
           callback(null);
         });
       }
     ], function(err){
+      sql = "update tokens set status = 0 where id in ("+allTokens.join()+")";
+      db.query(sql, function(err, result){
+        if(err) throw err;
+        console.log(result.affectedRows);
+      });
       console.log('end');
       res.json(allTokens);
     });
+  });
 
+  router.get('/makehistory/:type', function(req, res, next){
+    
+    let company = req.query.company;
+    let type = req.params.type;
+    let dirName = (type=='day') ? 'daily' : type;
+    let jsonData = [];
+
+    async.waterfall([
+      function(callback){
+        
+        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        
+        db.query(sql, function (err, companies) {
+          if (err) throw err;
+          callback(null, companies);
+        });  
+      },
+      function(companies, callback){
+        async.forEach(companies, function(cmp, done){
+          
+          var conv = cmp.conversion.split('/');
+          let filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+
+          const timestamp = Math.floor(new Date() / 1000);
+          link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+cmp.company;
+          
+          var ip = req.connection.remoteAddress;
+          
+          request.get({url: link, localAdress: ip}, function(error, request, body){
+            if(error) res.json(error);
+
+            var rates = JSON.parse(body);
+            rates = rates.Data;
+            if(rates.length > 0){
+              console.log('in');
+              // jsonData.push(rates);
+              fs.writeFileSync(filePath, JSON.stringify(rates)); 
+            }
+            else{
+              console.log('out');
+              console.log(link);
+            }
+          }, function(err){
+            if(err) throw err;
+            done();
+          });
+        },function(err){
+            if(err) throw err;
+            callback(null);
+        });
+      }
+    ], function(error) {
+      console.log('End');
+      res.json({'msg': 'Successfully Saved'});
+    });
   });
 
   return router;

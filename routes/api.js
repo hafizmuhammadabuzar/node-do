@@ -60,14 +60,17 @@ router.get('/test', function(req, res, next){
     if(v_errors){
       res.json(v_errors);
     }
+    
+    var conv = req.query.conversion.split('/');
 
-    let rawdata = fs.readFileSync('public/data/'+req.query.company+'/'+req.params.type+'.json');  
+    let rawdata = fs.readFileSync('public/data/'+req.query.company+'/'+req.params.type+'/'+conv[0]+'-'+conv[1]+'.json');  
     let histo = JSON.parse(rawdata);
     let result = {
       status : 'Success',
       msg : req.query.company+' History',
-      data: histo[req.query.conversion]
     }
+    
+    result.data = ('Data' in histo) ? histo.Data : histo;
     res.json(result);
   });
 

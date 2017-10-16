@@ -36,7 +36,7 @@ var iosPush = function(token, msg){
 
     request.post(options, function(err, response){
         if(err) throw err;
-        // console.log(response);
+        console.log(response.body);
         return response;
     });
 }
