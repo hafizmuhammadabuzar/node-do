@@ -6,6 +6,7 @@ var async = require('async');
 const fs = require('fs');
 var androidPush = require('../helpers/android-push');
 var iosPush = require('../helpers/ios-push');
+var Promise = require('promise');
 
 /* GET home page. */
 var returnRouter = function(io) {
@@ -173,30 +174,45 @@ var returnRouter = function(io) {
             link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
             
             var ip = req.connection.remoteAddress;
-            
-            request.get({url: link, localAdress: ip}, function(error, request, body){
-              if(error){
-                callback(error, null);
-              }
-              var rates = JSON.parse(body);
-              rates = rates.Data;
-              graphRates.push(rates[rates.length-1]);
-              if(rates == undefined){
-                console.log(cmp.conversion);
-              }
 
-              if(rates.length > 0){
-                // console.log('right ' + cmp.conversion);
-                v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
-                values.push(v);
-                done();
-              }
-              else{
-                // console.log(cmp.conversion);
-                done();
-              }
-
+            var myData  = new Promise(function (resolve, reject) {
+              request({url:link}, function (err, res, body) {
+                  if (err) {
+                      return reject(err);
+                  } else if (res.statusCode !== 200) {
+                      err = new Error("Unexpected status code: " + res.statusCode);
+                      err.res = res;
+                      return reject(err);
+                  }
+                  var rates = JSON.parse(body);
+                  rates = rates.Data;
+                  if(rates.length > 0){
+                    v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
+                    values.push(v);
+                  }
+                  resolve(body);
+                  done();
+              });
             });
+
+            
+            // request.get({url: link, localAdress: ip}, function(error, response, body){
+            //   if(error){
+            //     res.send(error);
+            //   }
+            //   var rates = JSON.parse(body);
+            //   rates = rates.Data;
+
+              // if(rates.length > 0){
+              //   v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
+              //   values.push(v);
+              //   done();
+              // }
+            //   else{
+            //     console.log(cmp.conversion);
+            //     done();
+            //   }
+            // });
           },function(err){
               callback(null);
           });
@@ -213,7 +229,7 @@ var returnRouter = function(io) {
       }
     ], function(error) {
       console.log('End');
-      res.json({'msg': 'Successfully Saved'});
+      res.json({'msg': 'Successfully Saved', data: values});
     });
   });
 
