@@ -14,10 +14,13 @@
     
   //var socket = io.connect('http://localhost:4000');
   //var socket = io.connect('https://fast-ravine-54434.herokuapp.com');
-  var socket = io.connect('http://165.227.183.31:5000');
+  //var socket = io.connect('http://165.227.183.31:5000');
+  var socket = io.connect('http://192.151.147.250:5000');
+  socket.on('new_ticker', function (data) {
+    console.log(data.appMsg);
+  });
   socket.on('ticker', function (data) {
     console.log(data);
-    $('.server_req').text(data.rates);
   });
   socket.on('news', function (data) {
     $('.server_req').text(data.serverMsg);
