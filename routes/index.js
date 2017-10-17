@@ -236,6 +236,7 @@ var returnRouter = function(io) {
   router.get('/cron/ticker', function(req, res, next){
     var rawdata = fs.readFileSync('public/data/tickers.json');  
     var ticker = JSON.parse(rawdata);
+    io.sockets.emit('new_ticker', {'appMsg': 'Testing Socket'});
     io.sockets.emit('ticker', {'rates': ticker});
     res.json(ticker);
   });
