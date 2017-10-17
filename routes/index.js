@@ -181,15 +181,18 @@ var returnRouter = function(io) {
               var rates = JSON.parse(body);
               rates = rates.Data;
               graphRates.push(rates[rates.length-1]);
+              if(rates == undefined){
+                console.log(cmp.conversion);
+              }
 
               if(rates.length > 0){
-                console.log(link);
+                // console.log('right ' + cmp.conversion);
                 v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
                 values.push(v);
                 done();
               }
               else{
-                console.log(link);
+                // console.log(cmp.conversion);
                 done();
               }
 
