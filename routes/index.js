@@ -105,9 +105,9 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
         
-        let company = req.query.company;
-        let type = req.params.type;
-        let dirName = (type=='day') ? 'daily' : type;
+        var company = req.query.company;
+        var type = req.params.type;
+        var dirName = (type=='day') ? 'daily' : type;
         
         var sql = "select company, conversion from company_conversions where company = '"+company+"'";
         
@@ -118,9 +118,9 @@ var returnRouter = function(io) {
             
             var conv = cmp.conversion.split('/');
             
-            let filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-            let rawdata = fs.readFileSync(filePath);
-            let jsonData = JSON.parse(rawdata);
+            var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+            var rawdata = fs.readFileSync(filePath);
+            var jsonData = JSON.parse(rawdata);
             jsonData = jsonData.Data;
 
             const timestamp = Math.floor(new Date() / 1000);
@@ -156,7 +156,7 @@ var returnRouter = function(io) {
     var values = [];
     var graphRates = [];
     var conversion = [];
-    let company = req.query.company;
+    var company = req.query.company;
 
     async.waterfall([
       function(callback){
@@ -209,16 +209,16 @@ var returnRouter = function(io) {
   });
 
   router.get('/cron/ticker', function(req, res, next){
-    let rawdata = fs.readFileSync('public/data/tickers.json');  
-    let ticker = JSON.parse(rawdata);
+    var rawdata = fs.readFileSync('public/data/tickers.json');  
+    var ticker = JSON.parse(rawdata);
     io.sockets.emit('ticker', {'rates': ticker});
     res.json(ticker);
   });
 
   router.get('/ticker', function(req, res, next){
 
-    let rawdata = fs.readFileSync('public/data/tickers.json');  
-    let ticker = JSON.parse(rawdata);
+    var rawdata = fs.readFileSync('public/data/tickers.json');  
+    var ticker = JSON.parse(rawdata);
 
     // var ticker = {};
     async.waterfall([
@@ -292,7 +292,7 @@ var returnRouter = function(io) {
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
-        async.forEach(companies, function(cmp, complete){
+        async.forEach(companies, function(cmp, compvare){
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://www.bitstamp.net/api/v2/ticker/"+splitConversion.toLowerCase();
           request.get(link, function(error, request, body){
@@ -311,7 +311,7 @@ var returnRouter = function(io) {
               };
                   
               ticker.Bitstamp = bitstampObj;
-              complete();
+              compvare();
             });
         },function(err){
           callback(null);
@@ -324,7 +324,7 @@ var returnRouter = function(io) {
       db.query(sql, function (err, companies) {
         if (err) callback(err);
         
-        async.forEach(companies, function(cmp, complete){
+        async.forEach(companies, function(cmp, compvare){
           var conversion = cmp.keyName;
           link = "https://api.kraken.com/0/public/Ticker?pair="+conversion;
           request.get(link, function(error, request, body){
@@ -344,7 +344,7 @@ var returnRouter = function(io) {
               };
                   
               ticker.Kraken = krakenObj;
-              complete();
+              compvare();
             });
         },function(err){
           callback(null);
@@ -352,7 +352,7 @@ var returnRouter = function(io) {
       });  
     }
   ], function(err){
-      let data = JSON.stringify(ticker);  
+      var data = JSON.stringify(ticker);  
       fs.writeFileSync('public/data/tickers.json', data); 
       res.send('Ticker Sent');
     });
@@ -360,17 +360,17 @@ var returnRouter = function(io) {
 
   router.get('/sendAlerts', function(req, res, next){
 
-    let rawdata = fs.readFileSync('public/data/tickers.json');
-    let jsonData = JSON.parse(rawdata);
-    let allTokens = [];
+    var rawdata = fs.readFileSync('public/data/tickers.json');
+    var jsonData = JSON.parse(rawdata);
+    var allTokens = [];
     
     async.waterfall([
       function(callback){
-        let tokens = [];
-        let companies = Object.keys(jsonData);
-        async.forEachOf(companies, function(cmp, key, complete){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
     
-          let pairObject = jsonData[cmp]; 
+          var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
             sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NOT NULL";
@@ -378,14 +378,14 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                let msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then you criteria";
                 iosPush(tokenData[0].player_id, msg);
                 // tokens.push(tokenData[0].player_id);
               }
               done();
             });
           }, function(allTokens){
-            complete();
+            compvare();
           });
         }, function(allTokens){
           callback(null);
@@ -393,11 +393,11 @@ var returnRouter = function(io) {
 
       },
       function(callback){
-        let tokens = [];
-        let companies = Object.keys(jsonData);
-        async.forEachOf(companies, function(cmp, key, complete){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
     
-          let pairObject = jsonData[cmp]; 
+          var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
             sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NULL";
@@ -405,25 +405,25 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                let msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then you criteria";
                 androidPush(tokenData[0].token, msg);
                 // tokens.push(tokenData[0].token);
               }
               done();
             });
           }, function(allTokens){
-            complete();
+            compvare();
           });
         }, function(allTokens){
           callback(null);
         });
       },
       function(callback){
-        let tokens = [];
-        let companies = Object.keys(jsonData);
-        async.forEachOf(companies, function(cmp, key, complete){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
     
-          let pairObject = jsonData[cmp]; 
+          var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
             sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NOT NULL";
@@ -431,14 +431,14 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                let msg = cmp+" "+key+" is now below then you criteria";
+                var msg = cmp+" "+key+" is now below then you criteria";
                 iosPush(tokenData[0].player_id, msg);
                 // tokens.push(tokenData[0].player_id);
               }
               done();
             });
           }, function(allTokens){
-            complete();
+            compvare();
           });
         }, function(allTokens){
           callback(null);
@@ -446,11 +446,11 @@ var returnRouter = function(io) {
 
       },
       function(callback){
-        let tokens = [];
-        let companies = Object.keys(jsonData);
-        async.forEachOf(companies, function(cmp, key, complete){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
     
-          let pairObject = jsonData[cmp]; 
+          var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
             sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NULL";
@@ -458,14 +458,14 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                let msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then you criteria";
                 androidPush(tokenData[0].token, msg);
                 // tokens.push(tokenData[0].token);
               }
               done();
             });
           }, function(allTokens){
-            complete();
+            compvare();
           });
         }, function(allTokens){
           callback(null);

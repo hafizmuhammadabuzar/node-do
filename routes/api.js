@@ -61,9 +61,9 @@ router.get('/test', function(req, res, next){
       res.json(v_errors);
     }
 
-    let company = req.query.company;
-    let type = req.params.type;
-    let conversion = req.query.conversion;
+    var company = req.query.company;
+    var type = req.params.type;
+    var conversion = req.query.conversion;
     
     if(req.params.type == 'minute'){
       console.log('here');
@@ -71,7 +71,7 @@ router.get('/test', function(req, res, next){
       db.query(sql, function(err, ratesData){
         if(err) throw err;
         console.log(ratesData);
-        let result = {
+        var result = {
           status : 'Success',
           msg : company+' History',
           data: ratesData
@@ -83,9 +83,9 @@ router.get('/test', function(req, res, next){
     else{
       var conv = req.query.conversion.split('/');
   
-      let rawdata = fs.readFileSync('public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json');  
-      let histo = JSON.parse(rawdata);
-      let result = {
+      var rawdata = fs.readFileSync('public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json');  
+      var histo = JSON.parse(rawdata);
+      var result = {
         status : 'Success',
         msg : req.query.company+' History',
       }
@@ -112,16 +112,16 @@ router.get('/test', function(req, res, next){
       res.json(v_errors);
     }
 
-    let token = req.query.token;
-    let device_id = req.query.device_id;
-    let company = req.query.company;
-    let conversion = req.query.conversion;
-    let price = req.query.price;
-    let type = req.query.type;
-    let date = req.query.date;
-    let status = req.query.status;
-    let id = req.query.id;
-    let result = {};
+    var token = req.query.token;
+    var device_id = req.query.device_id;
+    var company = req.query.company;
+    var conversion = req.query.conversion;
+    var price = req.query.price;
+    var type = req.query.type;
+    var date = req.query.date;
+    var status = req.query.status;
+    var id = req.query.id;
+    var result = {};
 
     async.waterfall([
       function(callback){
@@ -175,7 +175,7 @@ router.get('/test', function(req, res, next){
               callback(true);
             } 
   
-            let jsonData = JSON.parse(response.body);  
+            var jsonData = JSON.parse(response.body);  
             
             saveQuery = "insert into tokens (company, conversion, token, player_id, device_id, price, is_less, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+jsonData.id+"', '"+device_id+"', '"+price+"', "+type+", '"+date+"')";
             db.query(saveQuery, function(err, data){
@@ -233,16 +233,16 @@ router.get('/test', function(req, res, next){
       res.json(v_errors);
     }
 
-    let device_id = req.query.device_id;
-    let token = req.query.token;
-    let company = req.query.company;
-    let conversion = req.query.conversion;
-    let price = req.query.price;
-    let type = req.query.type;
-    let date = req.query.date;
-    let id = req.query.id;
-    let status = req.query.status;
-    let result = {};
+    var device_id = req.query.device_id;
+    var token = req.query.token;
+    var company = req.query.company;
+    var conversion = req.query.conversion;
+    var price = req.query.price;
+    var type = req.query.type;
+    var date = req.query.date;
+    var id = req.query.id;
+    var status = req.query.status;
+    var result = {};
 
     async.waterfall([
       function(callback){
@@ -300,8 +300,8 @@ router.get('/test', function(req, res, next){
       res.json(v_errors);
     }
 
-    let token = req.query.token;
-    let device_id = req.query.device_id;
+    var token = req.query.token;
+    var device_id = req.query.device_id;
 
     sql ="select * from tokens where device_id = '"+device_id+"'";
     // sql += (token != undefined) ? "token = '"+token+"'" : "device_id = '"+device_id+"'";
@@ -335,9 +335,9 @@ router.get('/test', function(req, res, next){
     var v_errors = req.validationErrors();
     if(v_errors) res.json(v_errors);
 
-    let id = req.query.id;
+    var id = req.query.id;
 
-    sql ="Delete from tokens where id = "+id;
+    sql ="Devare from tokens where id = "+id;
     
     db.query(sql, function(err, response){
       if(err){
@@ -348,11 +348,11 @@ router.get('/test', function(req, res, next){
       else{
         if(response.affectedRows == 1){
           result.status = 'Success';
-          result.msg = 'Successfully Deleted';
+          result.msg = 'Successfully Devared';
         }
         else{
           result.status = 'Error';
-          result.msg = 'Could not be deleted';
+          result.msg = 'Could not be devared';
         }
       }
       
