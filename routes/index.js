@@ -183,8 +183,13 @@ var returnRouter = function(io) {
               graphRates.push(rates[rates.length-1]);
               // conversion.push(conv);
 
-              v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
-              values.push(v);
+              if(rates.length > 0){
+                v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
+                values.push(v);
+              }
+              else{
+                console.log(link);
+              }
 
               done();
             });
