@@ -48,7 +48,7 @@ var returnRouter = function(io) {
             var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
             var rawdata = fs.readFileSync(filePath);
             var jsonData = JSON.parse(rawdata);
-            jsonData = jsonData.Data;
+            jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
 
             const timestamp = Math.floor(new Date() / 1000);
             link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
