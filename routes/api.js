@@ -66,11 +66,10 @@ router.get('/test', function(req, res, next){
     var conversion = req.query.conversion;
     
     if(req.params.type == 'minute'){
-      console.log('here');
       sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
+
       db.query(sql, function(err, ratesData){
         if(err) throw err;
-        console.log(ratesData);
         var result = {
           status : 'Success',
           msg : company+' History',
