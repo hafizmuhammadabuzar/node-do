@@ -156,6 +156,7 @@ var returnRouter = function(io) {
       }
     ], function(error) {
       console.log('End');
+      res.end();
       res.json({'msg': 'Successfully Saved', data: values});
     });
   });
@@ -330,7 +331,7 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                var msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then your criteria";
                 iosPush(tokenData[0].player_id, msg);
                 // tokens.push(tokenData[0].player_id);
               }
@@ -357,7 +358,7 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                var msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then your criteria";
                 androidPush(tokenData[0].token, msg);
                 // tokens.push(tokenData[0].token);
               }
@@ -383,7 +384,7 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                var msg = cmp+" "+key+" is now below then you criteria";
+                var msg = cmp+" "+key+" is now below then your criteria";
                 iosPush(tokenData[0].player_id, msg);
                 // tokens.push(tokenData[0].player_id);
               }
@@ -410,7 +411,7 @@ var returnRouter = function(io) {
               if(err) throw err;
               if(tokenData.length > 0){
                 allTokens.push(tokenData[0].id);
-                var msg = cmp+" "+key+" is now above then you criteria";
+                var msg = cmp+" "+key+" is now above then your criteria";
                 androidPush(tokenData[0].token, msg);
                 // tokens.push(tokenData[0].token);
               }
