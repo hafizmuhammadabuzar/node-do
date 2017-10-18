@@ -29,6 +29,8 @@ var returnRouter = function(io) {
 
   router.get('/history/:type', function(req, res, next){
     
+    var myArray = [];
+
     async.waterfall([
       function(callback){
         
@@ -64,6 +66,8 @@ var returnRouter = function(io) {
               if(rates.length > 0){
                 jsonData.push(rates[rates.length-1]);
                 fs.writeFileSync(filePath, JSON.stringify(jsonData));
+
+                myArray.push(jsonData);
               }
 
               done();
@@ -75,7 +79,8 @@ var returnRouter = function(io) {
       }
     ], function(error) {
       console.log('End');
-      res.json({'msg': 'Successfully Saved'});
+      res.end();
+      // res.json({'msg': 'Successfully Saved', data: myArray.length});
     });
   });
 
@@ -156,7 +161,6 @@ var returnRouter = function(io) {
       }
     ], function(error) {
       console.log('End');
-      res.end();
       res.json({'msg': 'Successfully Saved', data: values});
     });
   });
