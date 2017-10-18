@@ -52,6 +52,7 @@ var returnRouter = function(io) {
             if(fs.existsSync(filePath)){
               var rawdata = fs.readFileSync(filePath);
               var jsonData = JSON.parse(rawdata);
+              console.log(jsonData); process.exit();
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
   
               const timestamp = Math.floor(new Date() / 1000);
