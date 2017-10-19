@@ -158,12 +158,17 @@ var returnRouter = function(io) {
       },
       function(callback){
 
-        sql = "insert into minute_rates (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
-        db.query(sql, [values], function(err, saveResult){
-          if(err) throw err;
-          console.log(saveResult);
+        if(values.length > 0){
+          sql = "insert into minute_rates (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
+          db.query(sql, [values], function(err, saveResult){
+            if(err) throw err;
+            console.log(saveResult);
+            callback();
+          });
+        }
+        else{
           callback();
-        });
+        }
       }
     ], function(error) {
       console.log('End');
