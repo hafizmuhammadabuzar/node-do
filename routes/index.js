@@ -432,11 +432,13 @@ var returnRouter = function(io) {
         });
       }
     ], function(err){
-      sql = "update tokens set status = 0 where id in ("+allTokens.join()+")";
-      db.query(sql, function(err, result){
-        if(err) throw err;
-        console.log(result.affectedRows);
-      });
+      if(allTokens.length > 0){
+        sql = "update tokens set status = 0 where id in ("+allTokens.join()+")";
+        db.query(sql, function(err, result){
+          if(err) throw err;
+          console.log(result.affectedRows);
+        });
+      }
       console.log('end');
       res.json(allTokens);
     });
