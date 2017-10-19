@@ -29,6 +29,7 @@ var returnRouter = function(io) {
 
   router.get('/history/:type', function(req, res, next){
 
+    var dataArray = [];
     async.waterfall([
       function(callback){
         
@@ -64,6 +65,7 @@ var returnRouter = function(io) {
                 var rates = JSON.parse(body);
                 rates = rates.Data;
                 if(rates.length > 0){
+                  dataArray.push(rates[rates.length-1]);
                   jsonData.push(rates[rates.length-1]);
                   fs.writeFileSync(filePath, JSON.stringify(jsonData));
                 }
@@ -83,7 +85,7 @@ var returnRouter = function(io) {
     ], function(error) {
       console.log('End');
       // res.end();
-      res.json({'msg': 'Successfully Saved'});
+      res.json({'msg': 'Successfully Saved', 'data': dataArray});
     });
   });
 
