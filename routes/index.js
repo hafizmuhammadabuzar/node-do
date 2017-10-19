@@ -64,9 +64,10 @@ var returnRouter = function(io) {
                 }
                 var rates = JSON.parse(body);
                 rates = rates.Data;
+                dataArray.push(body);
+                dataArray.push(rates[rates.length-1]);
+                
                 if(rates.length > 0){
-                  dataArray.push(body);
-                  dataArray.push(rates[rates.length-1]);
                   jsonData.push(rates[rates.length-1]);
                   fs.writeFileSync(filePath, JSON.stringify(jsonData));
                 }
