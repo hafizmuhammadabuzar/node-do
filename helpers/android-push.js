@@ -12,7 +12,7 @@ var androidPush = function(token, msg){
 
     var msg = {
         'notification': {
-            'title': 'Dear User',
+            'title': 'XCoin Alert',
             'message': msg
         }
     };

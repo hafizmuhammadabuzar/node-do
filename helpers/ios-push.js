@@ -6,7 +6,7 @@ var iosPush = function(token, msg){
     let titleText, msgText;
     let playerId = [token];
 
-    titleText = 'Dear User';
+    titleText = 'XCoin Alert';
     msgText = msg;
     
     header = {
