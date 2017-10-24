@@ -336,7 +336,7 @@ router.get('/test', function(req, res, next){
 
     var id = req.query.id;
 
-    sql ="Devare from tokens where id = "+id;
+    sql ="Delete from tokens where id = "+id;
     
     db.query(sql, function(err, response){
       if(err){
@@ -347,11 +347,11 @@ router.get('/test', function(req, res, next){
       else{
         if(response.affectedRows == 1){
           result.status = 'Success';
-          result.msg = 'Successfully Devared';
+          result.msg = 'Successfully delete';
         }
         else{
           result.status = 'Error';
-          result.msg = 'Could not be devared';
+          result.msg = 'Could not be delete';
         }
       }
       
