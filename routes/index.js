@@ -342,7 +342,7 @@ var returnRouter = function(io) {
           var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
-            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NOT NULL";
+            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NOT NULL";
             db.query(sql, function(err, tokenData){
               if(err) throw err;
               if(tokenData.length > 0){
@@ -369,7 +369,7 @@ var returnRouter = function(io) {
           var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
-            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NULL";
+            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 0 and status = 1 and player_id IS NULL";
             db.query(sql, function(err, tokenData){
               if(err) throw err;
               if(tokenData.length > 0){
@@ -395,7 +395,7 @@ var returnRouter = function(io) {
           var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
-            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NOT NULL";
+            sql = "select id, token, player_id from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NOT NULL";
             db.query(sql, function(err, tokenData){
               if(err) throw err;
               if(tokenData.length > 0){
@@ -422,7 +422,7 @@ var returnRouter = function(io) {
           var pairObject = jsonData[cmp]; 
           async.forEachOf(pairObject, function(rate, key, done){
     
-            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price < '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NULL";
+            sql = "select id, token from tokens where company = '"+cmp+"' and conversion = '"+key+"' and price > '"+rate.last+"' and is_less = 1 and status = 1 and player_id IS NULL";
             db.query(sql, function(err, tokenData){
               if(err) throw err;
               if(tokenData.length > 0){
