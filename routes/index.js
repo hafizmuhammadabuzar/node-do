@@ -447,6 +447,7 @@ var returnRouter = function(io) {
         
         var company = req.query.company;
         var type = req.params.type;
+        var isNull = req.params.isNull;
         var dirName = (type=='day') ? 'daily' : type;
         
         var sql = "select company, conversion from company_conversions where company = '"+company+"'";
@@ -465,14 +466,24 @@ var returnRouter = function(io) {
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
               
               if(jsonData.length > 0){
-                var temp = [];
-                jsonData = jsonData.filter((x, i) => {
-                  if (temp.indexOf(x.time) < 0) {
-                    temp.push(x.time);
-                    return true;
-                  }
-                  return false;
-                });
+                if(isNull != 1){
+                  var temp = [];
+                  jsonData = jsonData.filter((x, i) => {
+                    if (temp.indexOf(x.time) < 0 && x.close != 0) {
+                      temp.push(x.time);
+                      return true;
+                    }
+                    return false;
+                  });
+                }
+                else{
+                  jsonData = jsonData.filter((x, i) => {
+                    if (x !== null) {
+                      return true;
+                    }
+                    return false;
+                  });
+                }
   
                 fs.writeFileSync(filePath, JSON.stringify(jsonData));
               }
