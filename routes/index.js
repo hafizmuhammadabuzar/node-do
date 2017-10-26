@@ -467,7 +467,6 @@ var returnRouter = function(io) {
               
               if(jsonData.length > 0){
                 if(removeNull != 1){
-                  console.log('in');
                   var temp = [];
                   jsonData = jsonData.filter((x, i) => {
                     if (temp.indexOf(x.time) < 0 && x.close != 0) {
@@ -478,7 +477,6 @@ var returnRouter = function(io) {
                   });
                 }
                 else{
-                  console.log('out');
                   jsonData = jsonData.filter((x, i) => {
                     if (x !== null) {
                       return true;
