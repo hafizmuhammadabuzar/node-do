@@ -75,7 +75,7 @@ var returnRouter = function(io) {
                     fs.writeFileSync(filePath, JSON.stringify(jsonData));
                   }
                 }
-                
+
                 done();
               });
 
@@ -438,29 +438,60 @@ var returnRouter = function(io) {
     });
   });
 
-  router.get('/splice/:type', (req, res, next) => {
+
+  router.get('/duplicate/:type', (req, res, next) =>{
     
-        var company = req.query.company;
-        var conversion = req.query.conversion;
-        var startIndex = req.query.first;
-        var endIndex = req.query.last;
-        var type = req.params.type;
-        var dirName = (type=='day') ? 'daily' : type;
-    
-        var conv = conversion.split('/');
+      var company = req.query.company;
+      var conversion = req.query.conversion;
+      var type = req.params.type;
+      var dirName = (type=='day') ? 'daily' : type;
+      var conv = conversion.split('/');
+  
+      var filePath = 'public/data/'+company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+  
+      if(fs.existsSync(filePath)){
+        var rawdata = fs.readFileSync(filePath);
+        var jsonData = JSON.parse(rawdata);
+        jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
+  
+        var temp=[];
+        jsonData = jsonData.filter((x, i) => {
+          if (temp.indexOf(x.time) < 0) {
+            temp.push(x.time);
+            return true;
+          }
+          return false;
+        })
         
-        var filePath = 'public/data/'+company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-    
-        if(fs.existsSync(filePath)){
-          var rawdata = fs.readFileSync(filePath);
-          var jsonData = JSON.parse(rawdata);
-          jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
-        }
-        
-        jsonData.splice(startIndex, endIndex);
         fs.writeFileSync(filePath, JSON.stringify(jsonData));
-        res.json(jsonData);
-      });
+      }
+      
+    res.json(jsonData);
+  });
+
+  router.get('/splice/:type', (req, res, next) => {
+
+    var company = req.query.company;
+    var conversion = req.query.conversion;
+    var startIndex = req.query.first;
+    var endIndex = req.query.last;
+    var type = req.params.type;
+    var dirName = (type=='day') ? 'daily' : type;
+
+    var conv = conversion.split('/');
+    
+    var filePath = 'public/data/'+company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+
+    if(fs.existsSync(filePath)){
+      var rawdata = fs.readFileSync(filePath);
+      var jsonData = JSON.parse(rawdata);
+      jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
+    }
+    
+    jsonData.splice(startIndex, endIndex);
+    fs.writeFileSync(filePath, JSON.stringify(jsonData));
+    res.json(jsonData);
+  });
 
   return router;
 }
