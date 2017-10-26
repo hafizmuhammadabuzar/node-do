@@ -68,10 +68,14 @@ var returnRouter = function(io) {
                 dataArray.push(rates[rates.length-1]);
                 
                 if(rates.length > 0){
-                  jsonData.push(rates[rates.length-1]);
-                  fs.writeFileSync(filePath, JSON.stringify(jsonData));
+                  var jsonLastElement = jsonData[jsonData.length-1];
+                  var ratesLastElement = rates[rates.length-1];
+                  if(jsonLastElement.time != ratesLastElement.time){
+                    jsonData.push(ratesLastElement);
+                    fs.writeFileSync(filePath, JSON.stringify(jsonData));
+                  }
                 }
-  
+                
                 done();
               });
 
@@ -133,25 +137,6 @@ var returnRouter = function(io) {
                   done();
               });
             });
-
-            
-            // request.get({url: link, localAdress: ip}, function(error, response, body){
-            //   if(error){
-            //     res.send(error);
-            //   }
-            //   var rates = JSON.parse(body);
-            //   rates = rates.Data;
-
-              // if(rates.length > 0){
-              //   v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
-              //   values.push(v);
-              //   done();
-              // }
-            //   else{
-            //     console.log(cmp.conversion);
-            //     done();
-            //   }
-            // });
           },function(err){
               callback(null);
           });
