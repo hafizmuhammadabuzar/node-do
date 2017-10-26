@@ -464,16 +464,18 @@ var returnRouter = function(io) {
               var jsonData = JSON.parse(rawdata);
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
               
-              var temp=[];
-              jsonData = jsonData.filter((x, i) => {
-                if (temp.indexOf(x.time) < 0) {
-                  temp.push(x.time);
-                  return true;
-                }
-                return false;
-              });
-
-              fs.writeFileSync(filePath, JSON.stringify(jsonData));
+              if(jsonData.length > 0){
+                var temp = [];
+                jsonData = jsonData.filter((x, i) => {
+                  if (temp.indexOf(x.time) < 0) {
+                    temp.push(x.time);
+                    return true;
+                  }
+                  return false;
+                });
+  
+                fs.writeFileSync(filePath, JSON.stringify(jsonData));
+              }
               done();
             }
             else{
