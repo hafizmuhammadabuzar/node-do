@@ -445,9 +445,9 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
         
-        var company = req.query.company;
         var type = req.params.type;
-        var isNull = req.params.isNull;
+        var company = req.query.company;
+        var removeNull = req.query.removeNull;
         var dirName = (type=='day') ? 'daily' : type;
         
         var sql = "select company, conversion from company_conversions where company = '"+company+"'";
@@ -466,7 +466,8 @@ var returnRouter = function(io) {
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
               
               if(jsonData.length > 0){
-                if(isNull != 1){
+                if(removeNull != 1){
+                  console.log('in');
                   var temp = [];
                   jsonData = jsonData.filter((x, i) => {
                     if (temp.indexOf(x.time) < 0 && x.close != 0) {
@@ -477,6 +478,7 @@ var returnRouter = function(io) {
                   });
                 }
                 else{
+                  console.log('out');
                   jsonData = jsonData.filter((x, i) => {
                     if (x !== null) {
                       return true;
