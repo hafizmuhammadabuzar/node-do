@@ -81,15 +81,25 @@ router.get('/test', function(req, res, next){
     }
     else{
       var conv = req.query.conversion.split('/');
+      var filePath = 'public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json';
   
-      var rawdata = fs.readFileSync('public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json');  
-      var histo = JSON.parse(rawdata);
-      var result = {
-        status : 'Success',
-        msg : req.query.company+' History',
+      if(fs.existsSync(filePath)){
+        var rawdata = fs.readFileSync(filePath);  
+        
+        var histo = JSON.parse(rawdata);
+        var result = {
+          status : 'Success',
+          msg : req.query.company+' History',
+        }
+        
+        result.data = ('Data' in histo) ? histo.Data : histo;
       }
-      
-      result.data = ('Data' in histo) ? histo.Data : histo;
+      else{
+        var result = {
+          status : 'Success',
+          msg : 'No data found',
+        }
+      }
 
       res.json(result);
     }
