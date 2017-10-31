@@ -369,6 +369,44 @@ router.get('/test', function(req, res, next){
     });
   });
 
+  router.get('/bitstamp/minute', (req, res, next) => {
+    
+      var headers = {
+        'Cookie': 'nlbi_99025=oPj3dd5MQWPrb1y18F1n9AAAAACZ4SabRufPgkveG9htFdZW; incap_ses_432_99025=hweBbRS4CSxvG66Xo8b+BVUd71kAAAAANrJQbEqUA559+lAtYppoKg==; incap_ses_199_99025=IcKZTnTLDRAuxEDKBP7CAsgY+FkAAAAAjiAYlBnW4ARDV/Lp2sdWCg==; stmpkola=yh8zmg1nuua7th8ssm8ddwiss2m334t7; csrftoken=usFImvL2CQkeN8ryMnPseuRTnekOWd61; selected_currency_pair="BTC/USD"; __utma=209907974.1468649860.1506688824.1506975981.1509431508.5; __utmc=209907974; __utmz=209907974.1509431508.5.3.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); visid_incap_99025=5SMM3eZmT6+EkbVqXVwXTTE/zlkAAAAAQUIPAAAAAAC1WEY3OmQULO7ssXPZtyb5; incap_ses_426_99025=YcWlDHN72iYlhP0HEnXpBW09+FkAAAAADyUmtFapsRhhWS/M07YykA==',
+        'DNT': '1',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Connection': 'keep-alive',
+        'Referer': 'https://www.bitstamp.net/market/tradeview/',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+      
+      var options = {
+          url: 'https://www.bitstamp.net/market/tradeview_data/?currencyPair=BTC/USD&step=60',
+          headers: headers
+      };
+      
+      var allRates = [];
+      request(options, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+          var rates = JSON.parse(body);
+          if(rates.length > 0){
+            async.forEach(rates, (rate) => {
+              var curRate = {
+                'time': rate[0], 
+                'open': rate[1], 
+                'high': rate[2], 
+                'low': rate[3], 
+                'close': rate[4]
+              };
+
+              allRates.push(curRate);
+            });
+            res.json(allRates);
+          }
+        }
+    });
+  });
+
   return router;
 }
 
