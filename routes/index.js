@@ -560,6 +560,7 @@ var returnRouter = function(io) {
 
               allRates.push(curRate);
             });
+            // fs.writeFileSync('public/minutes.json', JSON.stringify(allRates));
             res.json(allRates);
           }
         }
