@@ -108,15 +108,15 @@ var returnRouter = function(io) {
             var jsonData = JSON.parse(rawdata);
             jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
 
-            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=10&toTs="+timestamp+"&e="+cmp.company;
+            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=5&toTs="+timestamp+"&e="+cmp.company;
             
             request.get(link, function (error, response, body) {
               var rates = JSON.parse(body);
               rates = rates.Data;
               
               if(rates.length > 0){
-                jsonData.push(rates);
-                fs.writeFileSync(filePath, JSON.stringify(jsonData));
+                var allRates = jsonData.concat(rates);
+                fs.writeFileSync(filePath, JSON.stringify(allRates));
               }
 
               next();
