@@ -214,7 +214,7 @@ var returnRouter = function(io) {
               done();
             }
             else{
-              callback(null);
+              done();
             }
           });
         },function(err){
