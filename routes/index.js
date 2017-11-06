@@ -19,7 +19,6 @@ var returnRouter = function(io) {
   router.get('/history/:type', function(req, res, next){
     
     var dataArray;
-    // var company = req.query.company;
     var type = req.params.type;
     var dirName = (type=='day') ? 'daily' : type;
 
@@ -81,68 +80,63 @@ var returnRouter = function(io) {
 
   router.get('/cron/history/minute', function(req, res, next){
     
-    var values = [];
-    var graphRates = [];
-    var conversion = [];
-    var company = req.query.company;
+    var dataArray;
+    var type = req.params.type;
+    var dirName = (type=='day') ? 'daily' : type;
 
     async.waterfall([
       function(callback){
         
-        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        var sql = "select company, conversion from company_conversions order by company";
         
         db.query(sql, function (err, companies) {
-          if (err) callback(err);
+          if (err) throw err;
+          dataArray = companies;
+          callback(null);
+        });  
+      }, function(callback){
+
+        async.eachSeries(dataArray, function(cmp, next){
           
-          async.forEach(companies, function(cmp, done){
+          setTimeout(function(){
             
             var conv = cmp.conversion.split('/');
-            const timestamp = Math.floor(new Date() / 1000);
-            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
-            
-            var ip = req.connection.remoteAddress;
+            var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
 
-            var myData  = new Promise(function (resolve, reject) {
-              request({url:link}, function (err, res, body) {
-                  if (err) {
-                      return reject(err);
-                  } else if (res.statusCode !== 200) {
-                      err = new Error("Unexpected status code: " + res.statusCode);
-                      err.res = res;
-                      return reject(err);
+            if(fs.existsSync(filePath)){
+              var rawdata = fs.readFileSync(filePath);
+              var jsonData = JSON.parse(rawdata);
+              jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
+              const timestamp = Math.floor(new Date() / 1000);
+
+              link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=5&toTs="+timestamp+"&e="+cmp.company;
+              
+              request.get(link, function (error, response, body) {
+                var rates = JSON.parse(body);
+                rates = rates.Data;
+                
+                if(rates.length > 0){
+                  var jsonLastElement = jsonData[jsonData.length-1];
+                  var ratesLastElement = rates[rates.length-1];
+                  if(jsonLastElement.time != ratesLastElement.time){
+                    jsonData.push(ratesLastElement);
+                    fs.writeFileSync(filePath, JSON.stringify(jsonData));
                   }
-                  var rates = JSON.parse(body);
-                  rates = rates.Data;
-                  if(rates.length > 0){
-                    v = [rates[rates.length-1].time, rates[rates.length-1].close, rates[rates.length-1].high, rates[rates.length-1].low, rates[rates.length-1].open, rates[rates.length-1].volumefrom, rates[rates.length-1].volumeto, company, cmp.conversion];
-                    values.push(v);
-                  }
-                  resolve(body);
-                  done();
+                }
+
+                next();
               });
-            });
-          },function(err){
-              callback(null);
-          });
-        });  
-      },
-      function(callback){
-
-        if(values.length > 0){
-          sql = "insert into minute_rates (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
-          db.query(sql, [values], function(err, saveResult){
-            if(err) throw err;
-            console.log(saveResult);
-            callback();
-          });
-        }
-        else{
-          callback();
-        }
+            }else{
+              next();
+            }
+          }, 100);
+        }, function(){
+          callback(null);
+        });
       }
     ], function(error) {
       console.log('End');
-      res.json({'msg': 'Successfully Saved', data: values});
+      res.json({'msg': 'Successfully Saved', 'data': dataArray});
     });
   });
 
