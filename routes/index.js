@@ -195,31 +195,30 @@ var returnRouter = function(io) {
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion.toLowerCase();
           request.get(link, function(error, request, body){
-            if(error){
-              callback(error, null);
-            }
-              var rates = JSON.parse(body);
-              var con = cmp.conversion;
+            if(error) throw error;
 
-              if(rates.bid != null){
-                bitfinexObj[cmp.conversion] = {
-                  'last': rates.last_price,
-                  'bid': rates.bid,
-                  'ask': rates.ask,
-                  'high': rates.high,
-                  'low': rates.low,
-                  'volume': rates.volume
-                };  
-  
-                ticker.Bitfinex = bitfinexObj;
-                done();
-              }
-              else{
-                callback(null);
-              }
-            });
-          },function(err){
-            callback(null);
+            var rates = JSON.parse(body);
+            var con = cmp.conversion;
+
+            if(rates.bid != null){
+              bitfinexObj[cmp.conversion] = {
+                'last': rates.last_price,
+                'bid': rates.bid,
+                'ask': rates.ask,
+                'high': rates.high,
+                'low': rates.low,
+                'volume': rates.volume
+              };  
+
+              ticker.Bitfinex = bitfinexObj;
+              done();
+            }
+            else{
+              callback(null);
+            }
+          });
+        },function(err){
+          callback(null);
         });
       });  
     },
