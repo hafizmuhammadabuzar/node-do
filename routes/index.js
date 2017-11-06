@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var request = require('request');
 var db = require('./../db_connect');
 var async = require('async');
 const fs = require('fs');
 var androidPush = require('../helpers/android-push');
 var iosPush = require('../helpers/ios-push');
 var Promise = require('promise');
+var request = require('request')
 
 /* GET home page. */
 var returnRouter = function(io) {
@@ -16,56 +16,43 @@ var returnRouter = function(io) {
     res.render('index', { title: 'Express' });
   });
 
-  router.get('/minute/rates', function(req, res, next){
-
-    var ip = req.connection.remoteAddress;
-
-    var sql = "insert into minute_requests (ip) values ('"+ip+"')";
-    db.query(sql, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    });
-  });
-
   router.get('/history/:type', function(req, res, next){
+    
+    var dataArray;
+    // var company = req.query.company;
+    var type = req.params.type;
+    var dirName = (type=='day') ? 'daily' : type;
 
-    var dataArray = [];
     async.waterfall([
       function(callback){
         
-        var company = req.query.company;
-        var type = req.params.type;
-        var dirName = (type=='day') ? 'daily' : type;
-        
-        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        var sql = "select company, conversion from company_conversions order by company";
         
         db.query(sql, function (err, companies) {
-          if (err) callback(err);
+          if (err) throw err;
+          dataArray = companies;
+          callback(null);
+        });  
+      }, function(callback){
+
+        async.eachSeries(dataArray, function(cmp, next){
           
-          async.forEach(companies, function(cmp, done){
+          setTimeout(function(){
             
             var conv = cmp.conversion.split('/');
-            
             var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
 
             if(fs.existsSync(filePath)){
               var rawdata = fs.readFileSync(filePath);
               var jsonData = JSON.parse(rawdata);
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
-  
               const timestamp = Math.floor(new Date() / 1000);
+
               link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
               
-              var ip = req.connection.remoteAddress;
-              
-              request.get({url: link, localAdress: ip}, function(error, request, body){
-                if(error){
-                  callback(error, null);
-                }
+              request.get(link, function (error, response, body) {
                 var rates = JSON.parse(body);
                 rates = rates.Data;
-                dataArray.push(body);
-                dataArray.push(rates[rates.length-1]);
                 
                 if(rates.length > 0){
                   var jsonLastElement = jsonData[jsonData.length-1];
@@ -76,21 +63,18 @@ var returnRouter = function(io) {
                   }
                 }
 
-                done();
+                next();
               });
-
+            }else{
+              next();
             }
-            else{
-              done();
-            }
-          },function(err){
-              callback(null);
-          });
-        });  
+          }, 100);
+        }, function(){
+          callback(null);
+        });
       }
     ], function(error) {
       console.log('End');
-      // res.end();
       res.json({'msg': 'Successfully Saved', 'data': dataArray});
     });
   });
@@ -174,7 +158,6 @@ var returnRouter = function(io) {
     var rawdata = fs.readFileSync('public/data/tickers.json');  
     var ticker = JSON.parse(rawdata);
 
-    // var ticker = {};
     async.waterfall([
       function(callback){
 
@@ -528,42 +511,52 @@ var returnRouter = function(io) {
     res.json(jsonData);
   });
 
-  router.get('/bitstamp/minute', (req, res, next) => {
+  router.get('/historyFull/:type', function(req, res, next){
     
-      var headers = {
-        'Cookie': 'nlbi_99025=oPj3dd5MQWPrb1y18F1n9AAAAACZ4SabRufPgkveG9htFdZW; incap_ses_432_99025=hweBbRS4CSxvG66Xo8b+BVUd71kAAAAANrJQbEqUA559+lAtYppoKg==; incap_ses_199_99025=IcKZTnTLDRAuxEDKBP7CAsgY+FkAAAAAjiAYlBnW4ARDV/Lp2sdWCg==; stmpkola=yh8zmg1nuua7th8ssm8ddwiss2m334t7; csrftoken=usFImvL2CQkeN8ryMnPseuRTnekOWd61; selected_currency_pair="BTC/USD"; __utma=209907974.1468649860.1506688824.1506975981.1509431508.5; __utmc=209907974; __utmz=209907974.1509431508.5.3.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); visid_incap_99025=5SMM3eZmT6+EkbVqXVwXTTE/zlkAAAAAQUIPAAAAAAC1WEY3OmQULO7ssXPZtyb5; incap_ses_426_99025=YcWlDHN72iYlhP0HEnXpBW09+FkAAAAADyUmtFapsRhhWS/M07YykA==',
-        'DNT': '1',
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'Connection': 'keep-alive',
-        'Referer': 'https://www.bitstamp.net/market/tradeview/',
-        'X-Requested-With': 'XMLHttpRequest',
-      };
-      
-      var options = {
-          url: 'https://www.bitstamp.net/market/tradeview_data/?currencyPair=BTC/USD&step=60',
-          headers: headers
-      };
-      
-      var allRates = [];
-      request(options, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-          var rates = JSON.parse(body);
-          if(rates.length > 0){
-            async.forEach(rates, (rate) => {
-              var curRate = {
-                'time': rate[0], 
-                'open': rate[1], 
-                'high': rate[2], 
-                'low': rate[3], 
-                'close': rate[4]
-              };
+    var dataArray;
+    var company = req.query.company;
+    var type = req.params.type;
+    var dirName = (type=='day') ? 'daily' : type;
 
-              allRates.push(curRate);
+    async.waterfall([
+      function(callback){
+        
+        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        // var sql = "select company, conversion from company_conversions order by company";
+        
+        db.query(sql, function (err, companies) {
+          if (err) throw err;
+          dataArray = companies;
+          callback(null);
+        });  
+      }, function(callback){
+
+        async.eachSeries(dataArray, function(cmp, next){
+          
+          setTimeout(function(){
+
+            var conv = cmp.conversion.split('/');
+            var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+            const timestamp = Math.floor(new Date() / 1000);
+            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
+
+            request.get(link, function (error, response, body) {
+              var rates = JSON.parse(body);
+              rates = rates.Data;
+              if(rates.length > 0){
+                fs.writeFileSync(filePath, JSON.stringify(rates));
+                console.log(cmp.company+' - '+cmp.conversion);
+              }
+              next();
             });
-            // fs.writeFileSync('public/minutes.json', JSON.stringify(allRates));
-            res.json(allRates);
-          }
-        }
+          }, 100);
+        }, function(){
+          callback(null);
+        });
+      }
+    ], function(error) {
+      console.log('End');
+      res.json({'msg': 'Successfully Saved', 'data': dataArray});
     });
   });
 
