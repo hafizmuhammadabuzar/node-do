@@ -86,6 +86,7 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
         
+        // var sql = "select company, conversion from company_conversions where company = 'Bitstamp'";
         var sql = "select company, conversion from company_conversions order by company";
         
         db.query(sql, function (err, companies) {
@@ -100,6 +101,8 @@ var returnRouter = function(io) {
           var conv = cmp.conversion.split('/');
           var filePath = 'public/data/'+cmp.company+'/minute/'+conv[0]+'-'+conv[1]+'.json';
 
+          // console.log(filePath); process.exit();
+
           if(fs.existsSync(filePath)){
             var rawdata = fs.readFileSync(filePath);
             var jsonData = JSON.parse(rawdata);
@@ -112,12 +115,8 @@ var returnRouter = function(io) {
               rates = rates.Data;
               
               if(rates.length > 0){
-                var jsonLastElement = jsonData[jsonData.length-1];
-                var ratesLastElement = rates[rates.length-1];
-                if(jsonLastElement.time != ratesLastElement.time){
-                  jsonData.push(ratesLastElement);
-                  fs.writeFileSync(filePath, JSON.stringify(jsonData));
-                }
+                jsonData.push(rates);
+                fs.writeFileSync(filePath, JSON.stringify(jsonData));
               }
 
               next();
