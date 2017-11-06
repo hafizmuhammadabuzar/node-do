@@ -80,9 +80,7 @@ var returnRouter = function(io) {
 
   router.get('/cron/history/minute', function(req, res, next){
     
-    var dataArray;
-    var type = req.params.type;
-    var dirName = (type=='day') ? 'daily' : type;
+    var dataArray = [];
     const timestamp = Math.floor(new Date() / 1000);
 
     async.waterfall([
@@ -100,14 +98,14 @@ var returnRouter = function(io) {
         async.eachSeries(dataArray, function(cmp, next){
           
           var conv = cmp.conversion.split('/');
-          var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+          var filePath = 'public/data/'+cmp.company+'/minute/'+conv[0]+'-'+conv[1]+'.json';
 
           if(fs.existsSync(filePath)){
             var rawdata = fs.readFileSync(filePath);
             var jsonData = JSON.parse(rawdata);
             jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
 
-            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=10&toTs="+timestamp+"&e="+cmp.company;
+            link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=10&toTs="+timestamp+"&e="+cmp.company;
             
             request.get(link, function (error, response, body) {
               var rates = JSON.parse(body);
@@ -125,6 +123,7 @@ var returnRouter = function(io) {
               next();
             });
           }else{
+            console.log('File does not exists');
             next();
           } 
         }, function(){
