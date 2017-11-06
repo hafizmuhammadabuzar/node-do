@@ -83,6 +83,7 @@ var returnRouter = function(io) {
     var dataArray;
     var type = req.params.type;
     var dirName = (type=='day') ? 'daily' : type;
+    const timestamp = Math.floor(new Date() / 1000);
 
     async.waterfall([
       function(callback){
@@ -98,38 +99,34 @@ var returnRouter = function(io) {
 
         async.eachSeries(dataArray, function(cmp, next){
           
-          setTimeout(function(){
+          var conv = cmp.conversion.split('/');
+          var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+
+          if(fs.existsSync(filePath)){
+            var rawdata = fs.readFileSync(filePath);
+            var jsonData = JSON.parse(rawdata);
+            jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
+
+            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=10&toTs="+timestamp+"&e="+cmp.company;
             
-            var conv = cmp.conversion.split('/');
-            var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-
-            if(fs.existsSync(filePath)){
-              var rawdata = fs.readFileSync(filePath);
-              var jsonData = JSON.parse(rawdata);
-              jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
-              const timestamp = Math.floor(new Date() / 1000);
-
-              link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=5&toTs="+timestamp+"&e="+cmp.company;
+            request.get(link, function (error, response, body) {
+              var rates = JSON.parse(body);
+              rates = rates.Data;
               
-              request.get(link, function (error, response, body) {
-                var rates = JSON.parse(body);
-                rates = rates.Data;
-                
-                if(rates.length > 0){
-                  var jsonLastElement = jsonData[jsonData.length-1];
-                  var ratesLastElement = rates[rates.length-1];
-                  if(jsonLastElement.time != ratesLastElement.time){
-                    jsonData.push(ratesLastElement);
-                    fs.writeFileSync(filePath, JSON.stringify(jsonData));
-                  }
+              if(rates.length > 0){
+                var jsonLastElement = jsonData[jsonData.length-1];
+                var ratesLastElement = rates[rates.length-1];
+                if(jsonLastElement.time != ratesLastElement.time){
+                  jsonData.push(ratesLastElement);
+                  fs.writeFileSync(filePath, JSON.stringify(jsonData));
                 }
+              }
 
-                next();
-              });
-            }else{
               next();
-            }
-          }, 100);
+            });
+          }else{
+            next();
+          } 
         }, function(){
           callback(null);
         });
@@ -510,6 +507,7 @@ var returnRouter = function(io) {
     var company = req.query.company;
     var type = req.params.type;
     var dirName = (type=='day') ? 'daily' : type;
+    const timestamp = Math.floor(new Date() / 1000);
 
     async.waterfall([
       function(callback){
@@ -526,23 +524,19 @@ var returnRouter = function(io) {
 
         async.eachSeries(dataArray, function(cmp, next){
           
-          setTimeout(function(){
+          var conv = cmp.conversion.split('/');
+          var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
+          link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=200&toTs="+timestamp+"&e="+cmp.company;
 
-            var conv = cmp.conversion.split('/');
-            var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-            const timestamp = Math.floor(new Date() / 1000);
-            link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=200&toTs="+timestamp+"&e="+cmp.company;
-
-            request.get(link, function (error, response, body) {
-              var rates = JSON.parse(body);
-              rates = rates.Data;
-              if(rates.length > 0){
-                fs.writeFileSync(filePath, JSON.stringify(rates));
-                console.log(cmp.company+' - '+cmp.conversion);
-              }
-              next();
-            });
-          }, 100);
+          request.get(link, function (error, response, body) {
+            var rates = JSON.parse(body);
+            rates = rates.Data;
+            if(rates.length > 0){
+              fs.writeFileSync(filePath, JSON.stringify(rates));
+              console.log(cmp.company+' - '+cmp.conversion);
+            }
+            next();
+          });
         }, function(){
           callback(null);
         });
