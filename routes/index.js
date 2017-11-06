@@ -521,8 +521,8 @@ var returnRouter = function(io) {
     async.waterfall([
       function(callback){
         
-        var sql = "select company, conversion from company_conversions where company = '"+company+"'";
-        // var sql = "select company, conversion from company_conversions order by company";
+        // var sql = "select company, conversion from company_conversions where company = '"+company+"'";
+        var sql = "select company, conversion from company_conversions order by company";
         
         db.query(sql, function (err, companies) {
           if (err) throw err;
