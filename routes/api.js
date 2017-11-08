@@ -163,7 +163,7 @@ router.get('/test', function(req, res, next){
             'device_os': "",
             'device_type': "0",
             'device_model': "iPhone",
-            'test_type': 1
+            'test_type': 2
           };
           var options = {
             uri: "https://onesignal.com/api/v1/players",
