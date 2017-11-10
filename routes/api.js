@@ -59,21 +59,40 @@ var result = {};
     var type = req.params.type;
     var conversion = req.query.conversion;
     
-    // if(req.params.type == 'minute'){
-    //   sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
+    if(req.params.type == 'minute'){
+      
+      const timestamp = Math.floor(new Date() / 1000);
+      var conv = conversion.split('/');
+      link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&toTs="+timestamp+"&e="+company;
+      
+      request.get(link, function (error, response, body) {
+        var rates = JSON.parse(body);
+        rates = rates.Data;
 
-    //   db.query(sql, function(err, ratesData){
-    //     if(err) throw err;
-    //     var result = {
-    //       status : 'Success',
-    //       msg : company+' History',
-    //       data: ratesData
-    //     }
+        var result = {
+          status : 'Success',
+          msg : company+' History',
+        }
+        
+        result.data = rates;
+        
+        res.json(result);
+      });
 
-    //     res.json(result);
-    //   });
-    // }
-    // else{
+      // sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
+
+      // db.query(sql, function(err, ratesData){
+      //   if(err) throw err;
+      //   var result = {
+      //     status : 'Success',
+      //     msg : company+' History',
+      //     data: ratesData
+      //   }
+
+        // res.json(result);
+      // });
+    }
+    else{
       var conv = req.query.conversion.split('/');
       var filePath = 'public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json';
   
@@ -103,8 +122,7 @@ var result = {};
 
         res.json(result);
       }
-      // res.json(result);
-    // }
+    }
   });
 
   router.get('/addIosToken', function(req, res, next){

@@ -101,8 +101,6 @@ var returnRouter = function(io) {
           var conv = cmp.conversion.split('/');
           var filePath = 'public/data/'+cmp.company+'/minute/'+conv[0]+'-'+conv[1]+'.json';
 
-          // console.log(filePath); process.exit();
-
           if(fs.existsSync(filePath)){
             var rawdata = fs.readFileSync(filePath);
             var jsonData = JSON.parse(rawdata);
