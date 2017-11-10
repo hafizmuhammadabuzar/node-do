@@ -13,12 +13,6 @@ var returnRouter = function(db) {
 var sql;
 var result = {};
 
-router.get('/test', function(req, res, next){
-  var send = androidPush();
-  // var send = iosPush();
-  res.json(send);
-});
-
   router.get('/companiesConversions', function(req, res) {
     sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
@@ -83,25 +77,33 @@ router.get('/test', function(req, res, next){
       var conv = req.query.conversion.split('/');
       var filePath = 'public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json';
   
+      var data = '';
       if(fs.existsSync(filePath)){
-        var rawdata = fs.readFileSync(filePath);  
+        var rawdata = fs.createReadStream(filePath); 
         
-        var histo = JSON.parse(rawdata);
-        var result = {
-          status : 'Success',
-          msg : req.query.company+' History',
-        }
-        
-        result.data = ('Data' in histo) ? histo.Data : histo;
+        rawdata.on('data', function(chunk) {  
+          data += chunk;
+        }).on('end', function() {
+          var histo = JSON.parse(data);
+          var result = {
+            status : 'Success',
+            msg : req.query.company+' History',
+          }
+          
+          result.data = ('Data' in histo) ? histo.Data : histo;
+          
+          res.json(result);
+        });
       }
       else{
         var result = {
           status : 'Success',
           msg : 'No data found',
         }
-      }
 
-      res.json(result);
+        res.json(result);
+      }
+      // res.json(result);
     // }
   });
 
@@ -132,6 +134,12 @@ router.get('/test', function(req, res, next){
     var id = req.query.id;
     var result = {};
 
+    // for v2 values
+    var below_price = (type==1) ? price : '';
+    var above_price = (type==0) ? price : '';
+    var is_persistent = 0;
+    // end for v2 values
+    
     async.waterfall([
       function(callback){
         sql = "select * from tokens where token = '"+token+"' and device_id = '"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and price = "+price+" and status ="+status+" and is_less ="+type;
@@ -195,6 +203,12 @@ router.get('/test', function(req, res, next){
                 
                 callback(true);
               } 
+
+              saveQueryV2 = "insert into tokens_v2 (company, conversion, token, player_id, device_id, above_price, below_price, is_persistent, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+jsonData.id+"', '"+device_id+"', '"+above_price+"', '"+below_price+"', "+is_persistent+", '"+date+"')";
+              db.query(saveQueryV2, function(err, data){
+                if(err) throw err;
+                return true;
+              });
   
               result.status = 'Success';
               result.msg = 'Successfully saved';
@@ -213,6 +227,13 @@ router.get('/test', function(req, res, next){
               
               callback(true);
             } 
+
+            sqlV2 = "update tokens_v2 set device_id = '"+device_id+"', company = '"+company+"', conversion = '"+conversion+"', above_price = '"+above_price+"', below_price = '"+below_price+"', is_persistent = "+is_persistent+", date = '"+date+"', status = "+status+" where id = "+id;
+            
+            db.query(sqlV2, function(err, data){
+              if(err) throw err;
+              return true;
+            });
 
             result.status = 'Success';
             result.msg = 'Successfully saved';
@@ -253,6 +274,12 @@ router.get('/test', function(req, res, next){
     var status = req.query.status;
     var result = {};
 
+    // for v2 values
+    var below_price = (type==1) ? price : '';
+    var above_price = (type==0) ? price : '';
+    var is_persistent = 0;
+    // end for v2 values
+
     async.waterfall([
       function(callback){
         sql = "select * from tokens where token = '"+token+"' and device_id ='"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and price = "+price+" and status ="+status+" and is_less ="+type;
@@ -276,10 +303,17 @@ router.get('/test', function(req, res, next){
 
         if(id == undefined){
           saveQuery = "insert into tokens (company, conversion, token, device_id, price, is_less, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+device_id+"', '"+price+"', "+type+", '"+date+"')";
+
+          // for v2
+          saveQueryV2 = "insert into tokens_v2 (company, conversion, token, device_id, above_price, below_price, is_persistent, date) values ('"+company+"', '"+conversion+"', '"+token+"', '"+device_id+"', '"+above_price+"', '"+below_price+"', "+is_persistent+", '"+date+"')";
         }
         else{
           saveQuery = "update tokens set company = '"+company+"', conversion = '"+conversion+"', price = '"+price+"', is_less = "+type+", date = '"+date+"', status = "+status+" where id = "+id;
+
+          // for v2
+          saveQueryV2 = "update tokens_v2 set company = '"+company+"', conversion = '"+conversion+"', above_price = '"+above_price+"', below_price = '"+below_price+"', is_persistent = "+is_persistent+", date = '"+date+"', status = "+status+" where id = "+id;
         }
+
         db.query(saveQuery, function(err, data){
           if(err){
             result.status = 'Error';
@@ -288,6 +322,11 @@ router.get('/test', function(req, res, next){
             
             callback(true);
           } 
+          
+          db.query(saveQueryV2, function(err, data){
+            if(err) throw err;
+            return true;
+          });
 
           result.status = 'Success';
           result.msg = 'Successfully saved';

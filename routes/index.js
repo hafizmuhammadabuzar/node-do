@@ -545,6 +545,55 @@ var returnRouter = function(io) {
     });
   });
 
+  router.get('/saveVenue', (req, res, next) => {
+
+    request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
+      if(error) throw error;
+      var data = JSON.parse(body.venues);
+      if(data.length > 0){
+        async.forEach(data, (row, done) => {
+          sql = "insert into venues (country, opening_hours, facebook, Ion, street, fax, catgeory, city, twitter, name, state, website, email, phone, houseno, lat, postcode, description)";
+          db.query(sql, function(err, queryResponse){
+            if(err) throw err;
+            console.log(queryResponse);
+            done();
+          });
+        }, function(){
+          res.send('Successfully Added!');
+        });
+      }
+      else{
+        res.send('No record found!');
+      }
+    });
+  });
+
+  router.get('/updateTokensV2', (req, res, next) => {
+
+    sql = "select * from tokens";
+
+    db.query(sql, function(err, data){
+      if(err) throw err;
+
+      async.forEach(data, function(d, done){
+
+        var below_price = (d.is_less==1) ? d.price : '';
+        var above_price = (d.is_less==0) ? d.price : '';
+        var is_persistent = 0;
+  
+        saveQuery = "insert into tokens_v2 (company, conversion, token, player_id, device_id, above_price, below_price, is_persistent, date) values ('"+d.company+"', '"+d.conversion+"', '"+d.token+"', '"+d.player_id+"', '"+d.device_id+"', '"+above_price+"', '"+below_price+"', "+is_persistent+", '"+d.date+"')";
+  
+        db.query(saveQuery, (error, response) => {
+          if(error) throw error;
+          done();
+        });
+      },function(){
+        res.send('Saved!');
+      });
+    });
+  });
+
+
   return router;
 }
 

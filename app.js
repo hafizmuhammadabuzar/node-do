@@ -8,21 +8,11 @@ var io = require('socket.io')();
 var db = require('./db_connect');
 var index = require('./routes/index')(io);
 var apiRoute = require('./routes/api')(db);
+var apiV2Route = require('./routes/v2/api')(db);
 
 var app = express();
 
 app.io = io;
-    
-  // io.on('connection', function (socket) {
-  //   socket.emit('news', { serverMsg: 'Welcome to chat window' });
-  //   socket.broadcast.emit('news', { serverMsg: 'New User Connected: '+socket.id });
-  //   socket.on('userSays', function (data) {
-  //     socket.broadcast.emit('userMsg', { msg: data.userMsg});
-  //   });
-  //   socket.on('typing', function (data) {
-  //     socket.broadcast.emit('userTyping', socket.id + 'is ' +data);
-  //   });
-  // });
     
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/api', apiRoute);
+app.use('/api/v2', apiV2Route);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
