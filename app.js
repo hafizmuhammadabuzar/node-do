@@ -13,6 +13,38 @@ var apiV2Route = require('./routes/v2/api')(db);
 var app = express();
 
 app.io = io;
+
+io.on('connection', (socket) => {
+  socket.on('getCompaniesPair', (data) => {
+    sql = "select company, conversion from company_conversions order by company";
+    db.query(sql, function (err, companies) {
+      if (err) throw err;      
+      var company = '';
+      var companiesArray = [];
+    
+      companies.forEach(function(value){
+          if(value.company != company){
+          var conversions = [];
+
+          companies.forEach(function(innerValue){
+              if(innerValue.company == value.company){
+              conversions.push({'cur': innerValue.conversion});
+              }
+          })
+
+          companiesArray.push({'company': value.company, 'conversions': conversions});
+          }
+
+          company = value.company;
+      })
+
+      io.sockets.emit('companiesPair', {'data': companiesArray});
+      res.send('Sent');
+    });
+
+  });
+
+});
     
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

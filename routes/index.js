@@ -133,7 +133,7 @@ var returnRouter = function(io) {
     });
   });
 
-
+ // company with pairs list saved in socket 
   router.get('/socket/companiesConversions', function(req, res) {
     sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
@@ -160,7 +160,7 @@ var returnRouter = function(io) {
       io.sockets.emit('companiesPair', {'data': companiesArray});
       res.send('Success');
     });
-});
+  });
 
   router.get('/cron/ticker', function(req, res, next){
     var rawdata = fs.readFileSync('public/data/tickers.json');  
@@ -712,14 +712,42 @@ var returnRouter = function(io) {
     request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
       if(error) throw error;
       if(response.statusCode == 200){
+        var dataArray = [];
         var data = JSON.parse(body);
         data = data.venues;
         if(data.length > 0){
           async.eachSeries(data, (row, done) => {
   
+            var state = (row.state == null) ? '' : row.state.replace(/'/g, "`");
+            var street = (row.street == null) ? '' : row.street.replace(/'/g, "`");
+            var category = (row.category == null) ? '' : row.category.replace(/'/g, "`");
+            var city = (row.city == null) ? '' : row.city.replace(/'/g, "`");
             var description = (row.description == null) ? '' : row.description.replace(/'/g, "`");
+
             sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+description+"')";
   
+            // var dataObj = {
+            //   "country": row.country,
+            //   "opening_hours": row.opening_hours,
+            //   "facebook": row.facebook,
+            //   "lon": row.lon,
+            //   "street": row.street,
+            //   "fax": row.fax,
+            //   "category": row,category,
+            //   "city": row,city,
+            //   "twitter": rwo.twitter,
+            //   "name": row.name,
+            //   "state": row.state,
+            //   "website": row.website,
+            //   "email": row.email,
+            //   "phone": row.phone,
+            //   "houseno": row.houseno,
+            //   "lat": row.lat,
+            //   "postcode": row.postcode,
+            //   "description": row.description
+            // }
+
+
             // res.send(sql);
             // process.exit(0);
   
