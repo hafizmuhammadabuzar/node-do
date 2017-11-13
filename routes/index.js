@@ -425,7 +425,7 @@ var returnRouter = function(io) {
               var pairObject = jsonData[cmp]; 
               async.forEachOf(pairObject, function(rate, key, done){
         
-                sql = "select id, token, player_id, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+                sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
                 db.query(sql, function(err, tokenData){
                   if(err) throw err;
                   if(tokenData.length > 0){
@@ -454,7 +454,7 @@ var returnRouter = function(io) {
               var pairObject = jsonData[cmp]; 
               async.forEachOf(pairObject, function(rate, key, done){
         
-                sql = "select id, token, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NULL";
+                sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NULL";
                 db.query(sql, function(err, tokenData){
                   if(err) throw err;
                   if(tokenData.length > 0){
@@ -482,7 +482,7 @@ var returnRouter = function(io) {
               var pairObject = jsonData[cmp]; 
               async.forEachOf(pairObject, function(rate, key, done){
         
-                sql = "select id, token, player_id, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+                sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
                 db.query(sql, function(err, tokenData){
                   if(err) throw err;
                   if(tokenData.length > 0){
@@ -511,7 +511,7 @@ var returnRouter = function(io) {
               var pairObject = jsonData[cmp]; 
               async.forEachOf(pairObject, function(rate, key, done){
         
-                sql = "select id, token, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NULL";
+                sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NULL";
                 db.query(sql, function(err, tokenData){
                   if(err) throw err;
                   if(tokenData.length > 0){
