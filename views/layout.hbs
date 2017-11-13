@@ -19,6 +19,9 @@
   socket.on('ticker', function (data) {
     console.log(data);
   });
+  socket.on('getCompaniesPair', function (data) {
+    console.log(data);
+  });
   socket.on('news', function (data) {
     $('.server_req').text(data.serverMsg);
   });
