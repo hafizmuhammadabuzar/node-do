@@ -158,6 +158,7 @@ var returnRouter = function(io) {
       })
 
       io.sockets.emit('companiesPair', {'data': companiesArray});
+      res.send('Success');
     });
 });
 
