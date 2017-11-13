@@ -408,6 +408,142 @@ var returnRouter = function(io) {
     });
   });
 
+
+  // send alerts v2 to users and inactive 
+  router.get('/sendAlertsV2', function(req, res, next){
+    
+        var rawdata = fs.readFileSync('public/data/tickers.json');
+        var jsonData = JSON.parse(rawdata);
+        var allTokens = [];
+        
+        async.waterfall([
+          function(callback){
+            var tokens = [];
+            var companies = Object.keys(jsonData);
+            async.forEachOf(companies, function(cmp, key, compvare){
+        
+              var pairObject = jsonData[cmp]; 
+              async.forEachOf(pairObject, function(rate, key, done){
+        
+                sql = "select id, token, player_id, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+                db.query(sql, function(err, tokenData){
+                  if(err) throw err;
+                  if(tokenData.length > 0){
+                    if(tokenData[0].is_persistent == 0){
+                      allTokens.push(tokenData[0].id);
+                    }
+                    var msg = cmp+" "+key+" is now above than your criteria";
+                    iosPush(tokenData[0].player_id, msg);
+                    // tokens.push(tokenData[0].player_id);
+                  }
+                  done();
+                });
+              }, function(allTokens){
+                compvare();
+              });
+            }, function(allTokens){
+              callback(null);
+            });
+    
+          },
+          function(callback){
+            var tokens = [];
+            var companies = Object.keys(jsonData);
+            async.forEachOf(companies, function(cmp, key, compvare){
+        
+              var pairObject = jsonData[cmp]; 
+              async.forEachOf(pairObject, function(rate, key, done){
+        
+                sql = "select id, token, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NULL";
+                db.query(sql, function(err, tokenData){
+                  if(err) throw err;
+                  if(tokenData.length > 0){
+                    if(tokenData[0].is_persistent == 0){
+                      allTokens.push(tokenData[0].id);
+                    }
+                    var msg = cmp+" "+key+" is now above than your criteria";
+                    androidPush(tokenData[0].token, msg);
+                    // tokens.push(tokenData[0].token);
+                  }
+                  done();
+                });
+              }, function(allTokens){
+                compvare();
+              });
+            }, function(allTokens){
+              callback(null);
+            });
+          },
+          function(callback){
+            var tokens = [];
+            var companies = Object.keys(jsonData);
+            async.forEachOf(companies, function(cmp, key, compvare){
+        
+              var pairObject = jsonData[cmp]; 
+              async.forEachOf(pairObject, function(rate, key, done){
+        
+                sql = "select id, token, player_id, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+                db.query(sql, function(err, tokenData){
+                  if(err) throw err;
+                  if(tokenData.length > 0){
+                    if(tokenData[0].is_persistent == 0){
+                      allTokens.push(tokenData[0].id);
+                    }
+                    var msg = cmp+" "+key+" is now below than your criteria";
+                    iosPush(tokenData[0].player_id, msg);
+                    // tokens.push(tokenData[0].player_id);
+                  }
+                  done();
+                });
+              }, function(allTokens){
+                compvare();
+              });
+            }, function(allTokens){
+              callback(null);
+            });
+    
+          },
+          function(callback){
+            var tokens = [];
+            var companies = Object.keys(jsonData);
+            async.forEachOf(companies, function(cmp, key, compvare){
+        
+              var pairObject = jsonData[cmp]; 
+              async.forEachOf(pairObject, function(rate, key, done){
+        
+                sql = "select id, token, is_persistent from tokens where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NULL";
+                db.query(sql, function(err, tokenData){
+                  if(err) throw err;
+                  if(tokenData.length > 0){
+                    if(tokenData[0].is_persistent == 0){
+                      allTokens.push(tokenData[0].id);
+                    }
+                    var msg = cmp+" "+key+" is now below than your criteria";
+                    androidPush(tokenData[0].token, msg);
+                    // tokens.push(tokenData[0].token);
+                  }
+                  done();
+                });
+              }, function(allTokens){
+                compvare();
+              });
+            }, function(allTokens){
+              callback(null);
+            });
+          }
+        ], function(err){
+          if(allTokens.length > 0){
+            sql = "update tokens_v2 set status = 0 where id in ("+allTokens.join()+")";
+            db.query(sql, function(err, result){
+              if(err) throw err;
+              console.log(result.affectedRows);
+            });
+          }
+          console.log('end');
+          res.json(allTokens);
+        });
+      });
+
   // remove duplicate entries in a json file
   router.get('/duplicate/:type', (req, res, next) => {
 
@@ -553,8 +689,13 @@ var returnRouter = function(io) {
       // process.exit(0);
       if(data.length > 0){
         async.eachSeries(data, (row, done) => {
-          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values (`"+row.country+"`, `"+row.opening_hours+"`, `"+row.facebook+"`, `"+row.lon+"`, `"+row.street+"`, `"+row.fax+"`, `"+row.category+"`, `"+row.city+"`, `"+row.twitter+"`, `"+row.name+"`, `"+row.state+"`, `"+row.website+"`, `"+row.email+"`, `"+row.phone+"`, `"+data.houseno+"`, `"+row.lat+"`, `"+row.postcode+"`, `"+row.description+"`)";
-          
+
+          var description = row.description.replace("'", "`");
+          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+description+"')";
+
+          res.send(sql);
+          process.exit(0);
+
           db.query(sql, function(err, queryResponse){
             if(err) throw err;
             console.log(queryResponse);
