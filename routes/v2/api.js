@@ -97,7 +97,6 @@ var returnRouter = function(db) {
             res.json(v_errors);
         }
         else{
-
             var token = req.query.token;
             var device_id = req.query.device_id;
             var company = req.query.company;
@@ -218,7 +217,6 @@ var returnRouter = function(db) {
             res.json(v_errors);
         }
         else{
-
             var device_id = req.query.device_id;
             var token = req.query.token;
             var company = req.query.company;
@@ -287,33 +285,34 @@ var returnRouter = function(db) {
         if(v_errors){
             res.json(v_errors);
         }
-
-        var token = req.query.token;
-        var device_id = req.query.device_id;
-
-        sql = "select * from tokens where device_id = '"+device_id+"'";
-        
-        db.query(sql, function(err, alerts){
-            if(err){
-                result.status = 'Error';
-                result.msg = 'Some error occurred';
-                result.error = err;
-            }
-            else{
-                if(alerts.length > 0){
-                    result.status = 'Success';
-                    result.msg = 'User Alerts';
-                    result.data = alerts;
+        else{
+            var token = req.query.token;
+            var device_id = req.query.device_id;
+    
+            sql = "select * from tokens_v2 where device_id = '"+device_id+"'";
+            
+            db.query(sql, function(err, alerts){
+                if(err){
+                    result.status = 'Error';
+                    result.msg = 'Some error occurred';
+                    result.error = err;
                 }
                 else{
-                    result.status = 'Success';
-                    result.msg = 'No record found';
-                    result.data = [];
+                    if(alerts.length > 0){
+                        result.status = 'Success';
+                        result.msg = 'User Alerts';
+                        result.data = alerts;
+                    }
+                    else{
+                        result.status = 'Success';
+                        result.msg = 'No record found';
+                        result.data = [];
+                    }
                 }
-            }
-            
-            res.json(result);
-        });
+                
+                res.json(result);
+            });
+        }
     });
 
     router.get('/removeAlert', function(req, res, next){

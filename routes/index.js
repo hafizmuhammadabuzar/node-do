@@ -550,7 +550,7 @@ var returnRouter = function(io) {
       var data = JSON.parse(body.venues);
       if(data.length > 0){
         async.forEach(data, (row, done) => {
-          sql = "insert into venues (country, opening_hours, facebook, Ion, street, fax, catgeory, city, twitter, name, state, website, email, phone, houseno, lat, postcode, description)";
+          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, catgeory, city, twitter, name, state, website, email, phone, houseno, latitude, postcode, description)";
           db.query(sql, function(err, queryResponse){
             if(err) throw err;
             console.log(queryResponse);
@@ -590,7 +590,6 @@ var returnRouter = function(io) {
       });
     });
   });
-
 
   return router;
 }
