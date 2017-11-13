@@ -15,7 +15,9 @@ var app = express();
 app.io = io;
 
 io.on('connection', (socket) => {
+
   socket.on('getCompaniesPair', (data) => {
+    console.log('called');
     sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
       if (err) throw err;      
@@ -38,8 +40,8 @@ io.on('connection', (socket) => {
           company = value.company;
       })
 
-      io.sockets.emit('companiesPair', {'data': companiesArray});
-      res.send('Sent');
+      socket.emit('companiesPair', {'data': companiesArray});
+      console.log('done');
     });
 
   });

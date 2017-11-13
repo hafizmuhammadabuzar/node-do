@@ -19,7 +19,7 @@
   socket.on('ticker', function (data) {
     console.log(data);
   });
-  socket.on('getCompaniesPair', function (data) {
+  socket.on('companiesPair', function (data) {
     console.log(data);
   });
   socket.on('news', function (data) {
@@ -42,7 +42,7 @@
     var text = $(this).val();
     if (e.keyCode == 13){
       $(this).val(' ');
-      socket.emit('userSays', { userMsg: text });
+      socket.emit('getCompaniesPair', { userMsg: text });
     }
     else{
     socket.emit('typing', 'Typing...');
