@@ -547,11 +547,16 @@ var returnRouter = function(io) {
 
     request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
       if(error) throw error;
-      var data = JSON.parse(body.venues);
+      var data = JSON.parse(body);
+      data = data.venues;
+      // res.json(data);
+      // process.exit(0);
       if(data.length > 0){
-        async.forEach(data, (row, done) => {
-          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, catgeory, city, twitter, name, state, website, email, phone, houseno, latitude, postcode, description)";
+        async.eachSeries(data, (row, done) => {
+          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+row.description+"')";
+          
           db.query(sql, function(err, queryResponse){
+            res.send(query.sql); process.exit(0);
             if(err) throw err;
             console.log(queryResponse);
             done();

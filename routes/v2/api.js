@@ -323,7 +323,7 @@ var returnRouter = function(db) {
 
         var id = req.query.id;
 
-        sql ="Delete from tokens where id = "+id;
+        sql ="Delete from tokens_v2 where id = "+id;
         
         db.query(sql, function(err, response){
         if(err){
@@ -344,6 +344,17 @@ var returnRouter = function(db) {
         
         res.json(result);
         });
+    });
+
+    router.get('/saveVenue', (req, res, next) => {
+        
+        var data = JSON.parse(body.venues);
+        sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, catgeory, city, twitter, name, state, website, email, phone, houseno, latitude, postcode, description)";
+        db.query(sql, function(err, queryResponse){
+            if(err) throw err;
+            console.log(queryResponse);
+        });
+        res.send('No record found!');
     });
 
     return router;
