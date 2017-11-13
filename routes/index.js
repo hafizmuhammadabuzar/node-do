@@ -133,6 +133,34 @@ var returnRouter = function(io) {
     });
   });
 
+
+  router.get('/socket/companiesConversions', function(req, res) {
+    sql = "select company, conversion from company_conversions order by company";
+    db.query(sql, function (err, companies) {
+      if (err) throw err;      
+      var company = '';
+      var companiesArray = [];
+    
+      companies.forEach(function(value){
+          if(value.company != company){
+          var conversions = [];
+
+          companies.forEach(function(innerValue){
+              if(innerValue.company == value.company){
+              conversions.push({'cur': innerValue.conversion});
+              }
+          })
+
+          companiesArray.push({'company': value.company, 'conversions': conversions});
+          }
+
+          company = value.company;
+      })
+
+      io.sockets.emit('companiesPair', {'data': companiesArray});
+    });
+});
+
   router.get('/cron/ticker', function(req, res, next){
     var rawdata = fs.readFileSync('public/data/tickers.json');  
     var ticker = JSON.parse(rawdata);
@@ -408,141 +436,140 @@ var returnRouter = function(io) {
     });
   });
 
-
   // send alerts v2 to users and inactive 
   router.get('/sendAlertsV2', function(req, res, next){
     
-        var rawdata = fs.readFileSync('public/data/tickers.json');
-        var jsonData = JSON.parse(rawdata);
-        var allTokens = [];
-        
-        async.waterfall([
-          function(callback){
-            var tokens = [];
-            var companies = Object.keys(jsonData);
-            async.forEachOf(companies, function(cmp, key, compvare){
-        
-              var pairObject = jsonData[cmp]; 
-              async.forEachOf(pairObject, function(rate, key, done){
-        
-                sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
-                db.query(sql, function(err, tokenData){
-                  if(err) throw err;
-                  if(tokenData.length > 0){
-                    if(tokenData[0].is_persistent == 0){
-                      allTokens.push(tokenData[0].id);
-                    }
-                    var msg = cmp+" "+key+" is now above than your criteria";
-                    iosPush(tokenData[0].player_id, msg);
-                    // tokens.push(tokenData[0].player_id);
-                  }
-                  done();
-                });
-              }, function(allTokens){
-                compvare();
-              });
-            }, function(allTokens){
-              callback(null);
-            });
+    var rawdata = fs.readFileSync('public/data/tickers.json');
+    var jsonData = JSON.parse(rawdata);
+    var allTokens = [];
     
-          },
-          function(callback){
-            var tokens = [];
-            var companies = Object.keys(jsonData);
-            async.forEachOf(companies, function(cmp, key, compvare){
-        
-              var pairObject = jsonData[cmp]; 
-              async.forEachOf(pairObject, function(rate, key, done){
-        
-                sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NULL";
-                db.query(sql, function(err, tokenData){
-                  if(err) throw err;
-                  if(tokenData.length > 0){
-                    if(tokenData[0].is_persistent == 0){
-                      allTokens.push(tokenData[0].id);
-                    }
-                    var msg = cmp+" "+key+" is now above than your criteria";
-                    androidPush(tokenData[0].token, msg);
-                    // tokens.push(tokenData[0].token);
-                  }
-                  done();
-                });
-              }, function(allTokens){
-                compvare();
-              });
-            }, function(allTokens){
-              callback(null);
-            });
-          },
-          function(callback){
-            var tokens = [];
-            var companies = Object.keys(jsonData);
-            async.forEachOf(companies, function(cmp, key, compvare){
-        
-              var pairObject = jsonData[cmp]; 
-              async.forEachOf(pairObject, function(rate, key, done){
-        
-                sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
-                db.query(sql, function(err, tokenData){
-                  if(err) throw err;
-                  if(tokenData.length > 0){
-                    if(tokenData[0].is_persistent == 0){
-                      allTokens.push(tokenData[0].id);
-                    }
-                    var msg = cmp+" "+key+" is now below than your criteria";
-                    iosPush(tokenData[0].player_id, msg);
-                    // tokens.push(tokenData[0].player_id);
-                  }
-                  done();
-                });
-              }, function(allTokens){
-                compvare();
-              });
-            }, function(allTokens){
-              callback(null);
-            });
+    async.waterfall([
+      function(callback){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
     
-          },
-          function(callback){
-            var tokens = [];
-            var companies = Object.keys(jsonData);
-            async.forEachOf(companies, function(cmp, key, compvare){
-        
-              var pairObject = jsonData[cmp]; 
-              async.forEachOf(pairObject, function(rate, key, done){
-        
-                sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NULL";
-                db.query(sql, function(err, tokenData){
-                  if(err) throw err;
-                  if(tokenData.length > 0){
-                    if(tokenData[0].is_persistent == 0){
-                      allTokens.push(tokenData[0].id);
-                    }
-                    var msg = cmp+" "+key+" is now below than your criteria";
-                    androidPush(tokenData[0].token, msg);
-                    // tokens.push(tokenData[0].token);
-                  }
-                  done();
-                });
-              }, function(allTokens){
-                compvare();
-              });
-            }, function(allTokens){
-              callback(null);
-            });
-          }
-        ], function(err){
-          if(allTokens.length > 0){
-            sql = "update tokens_v2 set status = 0 where id in ("+allTokens.join()+")";
-            db.query(sql, function(err, result){
+          var pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+            db.query(sql, function(err, tokenData){
               if(err) throw err;
-              console.log(result.affectedRows);
+              if(tokenData.length > 0){
+                if(tokenData[0].is_persistent == 0){
+                  allTokens.push(tokenData[0].id);
+                }
+                var msg = cmp+" "+key+" is now above than your criteria";
+                iosPush(tokenData[0].player_id, msg);
+                // tokens.push(tokenData[0].player_id);
+              }
+              done();
             });
-          }
-          console.log('end');
-          res.json(allTokens);
+          }, function(allTokens){
+            compvare();
+          });
+        }, function(allTokens){
+          callback(null);
         });
-      });
+
+      },
+      function(callback){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
+    
+          var pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and above_price <= '"+rate.last+"' and status = 1 and player_id IS NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                if(tokenData[0].is_persistent == 0){
+                  allTokens.push(tokenData[0].id);
+                }
+                var msg = cmp+" "+key+" is now above than your criteria";
+                androidPush(tokenData[0].token, msg);
+                // tokens.push(tokenData[0].token);
+              }
+              done();
+            });
+          }, function(allTokens){
+            compvare();
+          });
+        }, function(allTokens){
+          callback(null);
+        });
+      },
+      function(callback){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
+    
+          var pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, player_id, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NOT NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                if(tokenData[0].is_persistent == 0){
+                  allTokens.push(tokenData[0].id);
+                }
+                var msg = cmp+" "+key+" is now below than your criteria";
+                iosPush(tokenData[0].player_id, msg);
+                // tokens.push(tokenData[0].player_id);
+              }
+              done();
+            });
+          }, function(allTokens){
+            compvare();
+          });
+        }, function(allTokens){
+          callback(null);
+        });
+
+      },
+      function(callback){
+        var tokens = [];
+        var companies = Object.keys(jsonData);
+        async.forEachOf(companies, function(cmp, key, compvare){
+    
+          var pairObject = jsonData[cmp]; 
+          async.forEachOf(pairObject, function(rate, key, done){
+    
+            sql = "select id, token, is_persistent from tokens_v2 where company = '"+cmp+"' and conversion = '"+key+"' and below_price >= '"+rate.last+"' and status = 1 and player_id IS NULL";
+            db.query(sql, function(err, tokenData){
+              if(err) throw err;
+              if(tokenData.length > 0){
+                if(tokenData[0].is_persistent == 0){
+                  allTokens.push(tokenData[0].id);
+                }
+                var msg = cmp+" "+key+" is now below than your criteria";
+                androidPush(tokenData[0].token, msg);
+                // tokens.push(tokenData[0].token);
+              }
+              done();
+            });
+          }, function(allTokens){
+            compvare();
+          });
+        }, function(allTokens){
+          callback(null);
+        });
+      }
+    ], function(err){
+      if(allTokens.length > 0){
+        sql = "update tokens_v2 set status = 0 where id in ("+allTokens.join()+")";
+        db.query(sql, function(err, result){
+          if(err) throw err;
+          console.log(result.affectedRows);
+        });
+      }
+      console.log('end');
+      res.json(allTokens);
+    });
+  });
 
   // remove duplicate entries in a json file
   router.get('/duplicate/:type', (req, res, next) => {
@@ -683,30 +710,32 @@ var returnRouter = function(io) {
 
     request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
       if(error) throw error;
-      var data = JSON.parse(body);
-      data = data.venues;
-      // res.json(data);
-      // process.exit(0);
-      if(data.length > 0){
-        async.eachSeries(data, (row, done) => {
-
-          var description = row.description.replace("'", "`");
-          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+description+"')";
-
-          res.send(sql);
-          process.exit(0);
-
-          db.query(sql, function(err, queryResponse){
-            if(err) throw err;
-            console.log(queryResponse);
-            done();
+      if(response.statusCode == 200){
+        var data = JSON.parse(body);
+        data = data.venues;
+        if(data.length > 0){
+          async.eachSeries(data, (row, done) => {
+  
+            var description = (row.description == null) ? '' : row.description.replace(/'/g, "`");
+            sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+description+"')";
+  
+            // res.send(sql);
+            // process.exit(0);
+  
+            db.query(sql, function(err, queryResponse){
+              if(err) throw err;
+              console.log(queryResponse);
+              done();
+            });
+          }, function(){
+            res.send('Successfully Added!');
           });
-        }, function(){
-          res.send('Successfully Added!');
-        });
-      }
-      else{
-        res.send('No record found!');
+        }
+        else{
+          res.send('No record found!');
+        }
+      }else{
+        res.send('Empty Repsonse');
       }
     });
   });
