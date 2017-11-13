@@ -15,9 +15,7 @@ var app = express();
 app.io = io;
 
 io.on('connection', (socket) => {
-
   socket.on('getCompaniesPair', (data) => {
-    console.log('called');
     sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
       if (err) throw err;      
