@@ -553,10 +553,9 @@ var returnRouter = function(io) {
       // process.exit(0);
       if(data.length > 0){
         async.eachSeries(data, (row, done) => {
-          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+row.description+"')";
+          sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values (`"+row.country+"`, `"+row.opening_hours+"`, `"+row.facebook+"`, `"+row.lon+"`, `"+row.street+"`, `"+row.fax+"`, `"+row.category+"`, `"+row.city+"`, `"+row.twitter+"`, `"+row.name+"`, `"+row.state+"`, `"+row.website+"`, `"+row.email+"`, `"+row.phone+"`, `"+data.houseno+"`, `"+row.lat+"`, `"+row.postcode+"`, `"+row.description+"`)";
           
           db.query(sql, function(err, queryResponse){
-            res.send(query.sql); process.exit(0);
             if(err) throw err;
             console.log(queryResponse);
             done();

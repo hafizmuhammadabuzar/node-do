@@ -111,7 +111,7 @@ var returnRouter = function(db) {
     
             async.waterfall([
             function(callback){
-                sql = "select * from tokens_v2 where token = '"+token+"' and device_id = '"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and above_price = "+above_price+" and below_price = "+below_price+" and status ="+status+" and is_persistent ="+is_persistent;
+                sql = "select * from tokens_v2 where token = '"+token+"' and device_id = '"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and above_price = '"+above_price+"' and below_price = '"+below_price+"' and status = "+status+" and is_persistent ="+is_persistent;
                 db.query(sql, function(err, data){
                 if(err){
                     result.status = 'Error';
@@ -231,7 +231,7 @@ var returnRouter = function(db) {
     
             async.waterfall([
             function(callback){
-                sql = "select * from tokens_v2 where token = '"+token+"' and device_id ='"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and above_price = "+above_price+" and below_price = '"+below_price+"' and status ="+status+" and is_persistent ="+is_persistent;
+                sql = "select * from tokens_v2 where token = '"+token+"' and device_id ='"+device_id+"' and company = '"+company+"' and conversion = '"+conversion+"' and above_price = '"+above_price+"' and below_price = '"+below_price+"' and status ="+status+" and is_persistent ="+is_persistent;
                 db.query(sql, function(err, data){
                 if(err){
                     result.status = 'Error';
