@@ -296,6 +296,7 @@ var returnRouter = function(io) {
             if(error){
               callback(error, null);
             }
+            console.log(body);
             if(body){
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
