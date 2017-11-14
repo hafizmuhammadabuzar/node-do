@@ -731,13 +731,19 @@ var returnRouter = function(io) {
         if(data.length > 0){
           async.eachSeries(data, (row, done) => {
   
+            var opening_hours = (row.opening_hours == null) ? '' : row.opening_hours.replace(/'/g, "`");
             var state = (row.state == null) ? '' : row.state.replace(/'/g, "`");
             var street = (row.street == null) ? '' : row.street.replace(/'/g, "`");
             var category = (row.category == null) ? '' : row.category.replace(/'/g, "`");
             var city = (row.city == null) ? '' : row.city.replace(/'/g, "`");
+            var houseno = (row.houseno == null) ? '' : row.houseno.replace(/'/g, "`");
+            var name = (row.name == null) ? '' : row.name.replace(/'/g, "`");
+            var phone = (row.phone == null) ? '' : row.phone.replace(/'/g, "`");
+            var fax = (row.fax == null) ? '' : row.fax.replace(/'/g, "`");
+            var postcode = (row.postcode == null) ? '' : row.postcode.replace(/'/g, "`");
             var description = (row.description == null) ? '' : row.description.replace(/'/g, "`");
 
-            sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+row.opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+row.street+"', '"+row.fax+"', '"+row.category+"', '"+row.city+"', '"+row.twitter+"', '"+row.name+"', '"+row.state+"', '"+row.website+"', '"+row.email+"', '"+row.phone+"', '"+data.houseno+"', '"+row.lat+"', '"+row.postcode+"', '"+description+"')";
+            sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+street+"', '"+fax+"', '"+category+"', '"+city+"', '"+row.twitter+"', '"+name+"', '"+state+"', '"+row.website+"', '"+row.email+"', '"+phone+"', '"+houseno+"', '"+row.lat+"', '"+postcode+"', '"+description+"')";
   
             // var dataObj = {
             //   "country": row.country,
