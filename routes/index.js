@@ -296,6 +296,7 @@ var returnRouter = function(io) {
             if(error){
               callback(error, null);
             }
+            try{
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
 
@@ -310,6 +311,11 @@ var returnRouter = function(io) {
                   
               ticker.Kraken = krakenObj;
               compvare();
+              
+            }
+            catch{
+              compvare();
+            }
             });
         },function(err){
           callback(null);
