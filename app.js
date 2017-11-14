@@ -16,7 +16,7 @@ app.io = io;
 
 io.on('connection', (socket) => {
   socket.on('getCompaniesPair', (data) => {
-    console.log('new user connected from companies');
+    console.log('new user connected from companies with data -> '+data);
     sql = "select company, conversion from company_conversions order by company";
     db.query(sql, function (err, companies) {
       if (err) throw err;      
