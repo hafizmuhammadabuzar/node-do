@@ -99,12 +99,12 @@ var returnRouter = function(io) {
         async.eachSeries(dataArray, function(cmp, next){
           
           var conv = cmp.conversion.split('/');
-          var filePath = 'public/data/'+cmp.company+'/minute/'+conv[0]+'-'+conv[1]+'.json';
+          // var filePath = 'public/data/'+cmp.company+'/minute/'+conv[0]+'-'+conv[1]+'.json';
 
-          if(fs.existsSync(filePath)){
-            var rawdata = fs.readFileSync(filePath);
-            var jsonData = JSON.parse(rawdata);
-            jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
+          // if(fs.existsSync(filePath)){
+          //   var rawdata = fs.readFileSync(filePath);
+          //   var jsonData = JSON.parse(rawdata);
+          //   jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
 
             link = "https://min-api.cryptocompare.com/data/histominute?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=4&toTs="+timestamp+"&e="+cmp.company;
             
@@ -113,16 +113,29 @@ var returnRouter = function(io) {
               rates = rates.Data;
               
               if(rates.length > 0){
-                var allRates = jsonData.concat(rates);
-                fs.writeFileSync(filePath, JSON.stringify(allRates));
+
+                var values = [];
+                async.forEach(rates, (rate) => {
+                  values.push([rate.time, rate.close, rate.high, rate.low, rate.open, rate.volumefrom, rate.volumeto, cmp.company, cmp.conversion]);
+                });
+                
+                var insertQuery = "insert into `minute_rates` (time, close, high, low, open, volumefrom, volumeto, company, conversion) values ?";
+                
+                db.query(insertQuery, [values], (error, queruRespopnse) => {
+                  if(error) throw error;
+                  return true;
+                });
+  
+                // var allRates = jsonData.concat(rates);
+                // fs.writeFileSync(filePath, JSON.stringify(allRates));
               }
 
               next();
             });
-          }else{
-            console.log('File does not exists');
-            next();
-          } 
+          // }else{
+          //   console.log('File does not exists');
+          //   next();
+          // } 
         }, function(){
           callback(null);
         });
