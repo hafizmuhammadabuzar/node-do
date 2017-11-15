@@ -387,7 +387,7 @@ var returnRouter = function(db) {
             var longitude = req.query.longitude;
             var radius = req.query.radius;
 
-            sql = "SELECT *, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
+            sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
 
             db.query(sql, (error, queryResponse) => {
                 if(error) throw error;
