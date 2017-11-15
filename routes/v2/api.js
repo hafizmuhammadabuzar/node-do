@@ -371,6 +371,43 @@ var returnRouter = function(db) {
         });
     });
 
+    router.get('/getPoints', (req, res, next) => {
+
+        req.checkQuery('latitude', 'Latitude required').notEmpty();
+        req.checkQuery('longitude', 'Longitude required').notEmpty();
+        req.checkQuery('radius', 'Radius required').notEmpty();
+        
+        var v_errors = req.validationErrors();
+        if(v_errors){
+            res.json(v_errors);
+        }
+        else{
+            var result = {};
+            var latitude = req.query.latitude;
+            var longitude = req.query.longitude;
+            var radius = req.query.radius;
+
+            sql = "SELECT *, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
+
+            db.query(sql, (error, queryResponse) => {
+                if(error) throw error;
+
+                if(queryResponse.length > 0){
+                    result.status = 'Success';
+                    result.msg = 'Map Points';
+                    result.points = queryResponse;
+                }
+                else{
+                    result.status = 'Error';
+                    result.msg = 'No record found';
+                }
+
+                res.json(result);
+            });
+        }
+        
+    });
+
     router.get('/saveVenue', (req, res, next) => {
         
         var data = JSON.parse(body.venues);
