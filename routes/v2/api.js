@@ -43,43 +43,68 @@ var returnRouter = function(db) {
         });
     });
 
+    
+  
     router.get('/getHistory/:type', function(req, res, next){
-
+        
         req.checkQuery('company', 'Company name required').notEmpty();
         req.checkQuery('conversion', 'Conversion required').notEmpty();
-
+    
         var v_errors = req.validationErrors();
         if(v_errors){
-        res.json(v_errors);
+            res.json(v_errors);
         }
-
+    
         var company = req.query.company;
         var type = req.params.type;
         var conversion = req.query.conversion;
         
-        var conv = req.query.conversion.split('/');
-        var filePath = 'public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json';
+        if(req.params.type == 'minute'){
+            
+            sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
     
-        if(fs.existsSync(filePath)){
-            var rawdata = fs.readFileSync(filePath);  
-            
-            var histo = JSON.parse(rawdata);
-            var result = {
-            status : 'Success',
-            msg : req.query.company+' History',
-            }
-            
-            result.data = ('Data' in histo) ? histo.Data : histo;
+            db.query(sql, function(err, ratesData){
+              if(err) throw err;
+              var result = {
+                status : 'Success',
+                msg : company+' History',
+                data: ratesData
+              }
+    
+            res.json(result);
+            });
         }
         else{
+            var conv = req.query.conversion.split('/');
+            var filePath = 'public/data/'+company+'/'+type+'/'+conv[0]+'-'+conv[1]+'.json';
+        
+            var data = '';
+            if(fs.existsSync(filePath)){
+            var rawdata = fs.createReadStream(filePath); 
+            
+            rawdata.on('data', function(chunk) {  
+                data += chunk;
+            }).on('end', function() {
+                var histo = JSON.parse(data);
+                var result = {
+                status : 'Success',
+                msg : req.query.company+' History',
+                }
+                
+                result.data = ('Data' in histo) ? histo.Data : histo;
+                
+                res.json(result);
+            });
+            }
+            else{
             var result = {
-            status : 'Success',
-            msg : 'No data found',
+                status : 'Success',
+                msg : 'No data found',
+            }
+    
+            res.json(result);
             }
         }
-
-        res.json(result);
-        // }
     });
 
     router.get('/addIosToken', function(req, res, next){
