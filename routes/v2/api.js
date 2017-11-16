@@ -43,8 +43,6 @@ var returnRouter = function(db) {
         });
     });
 
-    
-  
     router.get('/getHistory/:type', function(req, res, next){
         
         req.checkQuery('company', 'Company name required').notEmpty();
@@ -382,7 +380,6 @@ var returnRouter = function(db) {
         //     res.json(v_errors);
         // }
         // else{
-            var result = {};
             // var latitude = req.query.latitude;
             // var longitude = req.query.longitude;
             // var radius = req.query.radius;
@@ -403,10 +400,10 @@ var returnRouter = function(db) {
                     result.status = 'Error';
                     result.msg = 'No record found';
                 }
-                res.send(result);
+                
+                res.json(result);
             });
         // }
-        
     });
 
     router.get('/saveVenue', (req, res, next) => {
