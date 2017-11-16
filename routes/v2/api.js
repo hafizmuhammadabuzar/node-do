@@ -371,21 +371,21 @@ var returnRouter = function(db) {
 
     router.get('/getPoints', (req, res, next) => {
 
-        // req.checkQuery('latitude', 'Latitude required').notEmpty();
-        // req.checkQuery('longitude', 'Longitude required').notEmpty();
-        // req.checkQuery('radius', 'Radius required').notEmpty();
+        req.checkQuery('latitude', 'Latitude required').notEmpty();
+        req.checkQuery('longitude', 'Longitude required').notEmpty();
+        req.checkQuery('radius', 'Radius required').notEmpty();
         
-        // var v_errors = req.validationErrors();
-        // if(v_errors){
-        //     res.json(v_errors);
-        // }
-        // else{
-            // var latitude = req.query.latitude;
-            // var longitude = req.query.longitude;
-            // var radius = req.query.radius;
+        var v_errors = req.validationErrors();
+        if(v_errors){
+            res.json(v_errors);
+        }
+        else{
+            var latitude = req.query.latitude;
+            var longitude = req.query.longitude;
+            var radius = req.query.radius;
 
-            // sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
-            sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
+            sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
+            // sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
 
             db.query(sql, (error, queryResponse) => {
                 if(error) throw error;
@@ -403,7 +403,7 @@ var returnRouter = function(db) {
                 
                 res.json(result);
             });
-        // }
+        }
     });
 
     router.get('/saveVenue', (req, res, next) => {
