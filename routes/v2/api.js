@@ -391,18 +391,17 @@ var returnRouter = function(db) {
                 if(error) throw error;
 
                 if(queryResponse.length > 0){
-                    // result.status = 'Success';
-                    // result.msg = 'Map Points';
-                    // result.points = queryResponse;
-                    // result.total = queryResponse.length;
-                    res.json(queryResponse);
+                    result.status = 'Success';
+                    result.msg = 'Map Points';
+                    result.points = queryResponse;
+                    result.total = queryResponse.length;
                 }
                 else{
                     result.status = 'Error';
                     result.msg = 'No record found';
-                    res.json(result);
                 }
                 
+                res.json(result);
             });
         // }
     });
