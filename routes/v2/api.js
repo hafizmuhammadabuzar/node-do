@@ -396,7 +396,8 @@ var returnRouter = function(db) {
                 if(queryResponse.length > 0){
                     result.status = 'Success';
                     result.msg = 'Map Points';
-                    result.points = queryResponse;
+                    // result.points = queryResponse;
+                    result.points = queryResponse.length;
                 }
                 else{
                     result.status = 'Error';
