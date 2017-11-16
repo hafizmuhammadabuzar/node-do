@@ -382,7 +382,7 @@ var returnRouter = function(db) {
         //     res.json(v_errors);
         // }
         // else{
-            var result = {};
+            // var result = {};
             // var latitude = req.query.latitude;
             // var longitude = req.query.longitude;
             // var radius = req.query.radius;
@@ -393,17 +393,17 @@ var returnRouter = function(db) {
             db.query(sql, (error, queryResponse) => {
                 if(error) throw error;
 
+                var result = {};
                 if(queryResponse.length > 0){
                     result.status = 'Success';
                     result.msg = 'Map Points';
-                    result.points = JSON.stringify(queryResponse);
+                    result.points = queryResponse;
                     result.total = queryResponse.length;
                 }
                 else{
                     result.status = 'Error';
                     result.msg = 'No record found';
                 }
-
                 res.json(result);
             });
         // }
