@@ -292,12 +292,12 @@ var returnRouter = function(io) {
         async.forEach(companies, function(cmp, compvare){
           var conversion = cmp.keyName;
           link = "https://api.kraken.com/0/public/Ticker?pair="+conversion;
-          request.get(link, function(error, request, body){
+          request.get(link, function(error, krakenResponse, body){
             if(error){
               callback(error, null);
             }
-            else{
-              console.log(body);
+            if(krakenResponse.status == 200){
+              // console.log(body);
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
 
@@ -311,6 +311,9 @@ var returnRouter = function(io) {
               };
                   
               ticker.Kraken = krakenObj;
+              compvare();
+            }
+            else{
               compvare();
             }
           });
