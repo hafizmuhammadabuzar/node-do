@@ -724,11 +724,20 @@ var returnRouter = function(io) {
 
     request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
       if(error) throw error;
+
+      // console.log(body);
       if(response.statusCode == 200){
         var dataArray = [];
         var data = JSON.parse(body);
         data = data.venues;
         if(data.length > 0){
+          // delete old venue points from database
+          sql = "delete from venues where is_user = 0";
+          db.query(sql, function(err, deleteResponse){
+            if(err) throw err;
+          });
+
+          // save each venue point in database
           async.eachSeries(data, (row, done) => {
   
             var opening_hours = (row.opening_hours == null) ? '' : row.opening_hours.replace(/'/g, "`");
@@ -743,32 +752,7 @@ var returnRouter = function(io) {
             var postcode = (row.postcode == null) ? '' : row.postcode.replace(/'/g, "`");
             var description = (row.description == null) ? '' : row.description.replace(/'/g, "`");
 
-            sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description) values ('"+row.country+"', '"+opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+street+"', '"+fax+"', '"+category+"', '"+city+"', '"+row.twitter+"', '"+name+"', '"+state+"', '"+row.website+"', '"+row.email+"', '"+phone+"', '"+houseno+"', '"+row.lat+"', '"+postcode+"', '"+description+"')";
-  
-            // var dataObj = {
-            //   "country": row.country,
-            //   "opening_hours": row.opening_hours,
-            //   "facebook": row.facebook,
-            //   "lon": row.lon,
-            //   "street": row.street,
-            //   "fax": row.fax,
-            //   "category": row,category,
-            //   "city": row,city,
-            //   "twitter": rwo.twitter,
-            //   "name": row.name,
-            //   "state": row.state,
-            //   "website": row.website,
-            //   "email": row.email,
-            //   "phone": row.phone,
-            //   "houseno": row.houseno,
-            //   "lat": row.lat,
-            //   "postcode": row.postcode,
-            //   "description": row.description
-            // }
-
-
-            // res.send(sql);
-            // process.exit(0);
+            sql = "insert into venues (country, opening_hours, facebook, longitude, street, fax, category, city, twitter, name, state, website, email, phone, house_no, latitude, postcode, description, status) values ('"+row.country+"', '"+opening_hours+"', '"+row.facebook+"', '"+row.lon+"', '"+street+"', '"+fax+"', '"+category+"', '"+city+"', '"+row.twitter+"', '"+name+"', '"+state+"', '"+row.website+"', '"+row.email+"', '"+phone+"', '"+houseno+"', '"+row.lat+"', '"+postcode+"', '"+description+"', 1)";
   
             db.query(sql, function(err, queryResponse){
               if(err) throw err;
@@ -776,7 +760,13 @@ var returnRouter = function(io) {
               done();
             });
           }, function(){
-            res.send('Successfully Added!');
+            console.log('in loop end');
+            sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
+            db.query(sql, function(err, venueList){
+              if(err) throw err;
+              fs.writeFileSync('public/data/venueList.json', JSON.stringify(venueList));
+              res.send('Successfully Added!');
+            });
           });
         }
         else{
@@ -785,6 +775,18 @@ var returnRouter = function(io) {
       }else{
         res.send('Empty Repsonse');
       }
+    });
+  });
+
+  router.post('/saveUserVenue', (req, res, next) => {
+
+    sql = "insert into venues (facebook, longitude, street, fax, category, twitter, name, website, email, phone, latitude, description) values ('"+req.body.facebook+"', '"+req.body.longitude+"', '"+req.body.fax+"', '"+req.body.category+"', '"+req.body.twitter+"', '"+name+"', '"+state+"', '"+req.body.website+"', '"+req.body.email+"', '"+req.body.phone+"', '"+req.body.latitude+"', '"+req.body.description+"')";
+    db.query(sql, function(err, queryResponse){
+      if(err) throw err;
+      console.log(queryResponse);
+      var result = {};
+      result.status = 'Success';
+      res.json(result);
     });
   });
 
