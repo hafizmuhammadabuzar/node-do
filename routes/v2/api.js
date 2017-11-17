@@ -406,6 +406,10 @@ var returnRouter = function(db) {
         }
     });
 
+    router.get('/venueList', (req, res, next) => {
+        res.sendfile('public/data/venueList.json');
+    });
+
     router.get('/saveVenue', (req, res, next) => {
         
         var data = JSON.parse(body.venues);
