@@ -296,6 +296,8 @@ var returnRouter = function(io) {
             if(error){
               callback(error, null);
             }
+            else{
+              console.log(body);
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
 
@@ -310,7 +312,8 @@ var returnRouter = function(io) {
                   
               ticker.Kraken = krakenObj;
               compvare();
-            });
+            }
+          });
         },function(err){
           callback(null);
         });
@@ -780,10 +783,9 @@ var returnRouter = function(io) {
 
   router.post('/saveUserVenue', (req, res, next) => {
 
-    sql = "insert into venues (facebook, longitude, street, fax, category, twitter, name, website, email, phone, latitude, description) values ('"+req.body.facebook+"', '"+req.body.longitude+"', '"+req.body.fax+"', '"+req.body.category+"', '"+req.body.twitter+"', '"+name+"', '"+state+"', '"+req.body.website+"', '"+req.body.email+"', '"+req.body.phone+"', '"+req.body.latitude+"', '"+req.body.description+"')";
+    sql = "insert into venues (facebook, longitude, fax, category, twitter, name, website, email, phone, latitude, description, is_user, status) values ('"+req.body.facebook+"', '"+req.body.longitude+"', '"+req.body.fax+"', '"+req.body.category+"', '"+req.body.twitter+"', '"+req.body.name+"', '"+req.body.website+"', '"+req.body.email+"', '"+req.body.phone+"', '"+req.body.latitude+"', '"+req.body.description+"', 1, 0)";
     db.query(sql, function(err, queryResponse){
       if(err) throw err;
-      console.log(queryResponse);
       var result = {};
       result.status = 'Success';
       res.json(result);
