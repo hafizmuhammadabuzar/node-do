@@ -61,7 +61,7 @@ var returnRouter = function(db) {
         
         if(req.params.type == 'minute'){
             
-            sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"'";
+            sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"' limit 2000";
     
             db.query(sql, function(err, ratesData){
               if(err) throw err;

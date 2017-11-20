@@ -6,9 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@warren-bank/node-poloniex-api": "^2.1.5",
     "array.chunk": "^1.1.0",
     "async": "^2.5.0",
     "async-request": "^1.2.0",
+    "autobahn": "^17.5.2",
     "body-parser": "~1.17.1",
     "cheerio": "^1.0.0-rc.2",
     "cookie-parser": "~1.4.3",
@@ -23,6 +25,7 @@
     "mysql": "^2.14.1",
     "nodemon": "^1.12.1",
     "pm2": "^2.7.2",
+    "poloniex-api-node": "^1.6.3",
     "promise": "^8.0.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.2",
