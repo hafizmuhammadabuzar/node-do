@@ -5,6 +5,7 @@ var fs = require('fs');
 var request = require('request');
 var async = require('async');
 var promise = require('promise');
+var path = require('path');
 router.use(validator());
 
 /* GET home page. */
@@ -409,7 +410,7 @@ var returnRouter = function(db) {
     });
 
     router.get('/venueList', (req, res, next) => {
-        res.sendFile('public/data/venueList.json');
+        res.sendFile('data/venueList.json', { root: path.join(__dirname, '/../../public') });
     });
 
     router.get('/saveVenue', (req, res, next) => {
