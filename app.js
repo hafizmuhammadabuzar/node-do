@@ -9,6 +9,7 @@ var db = require('./db_connect');
 var index = require('./routes/index')(io);
 var apiRoute = require('./routes/api')(db);
 var apiV2Route = require('./routes/v2/api')(db);
+var fs = require('fs');
 
 var app = express();
 
@@ -42,9 +43,17 @@ io.on('connection', (socket) => {
       socket.emit('companiesPair', {'data': companiesArray});
       console.log('done');
     });
-
   });
 
+  // update map points file on socket call from admin panel
+  socket.on('mapVenues', (data) => {
+    sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
+    db.query(sql, function(err, venueList){
+      if(err) throw err;
+      fs.writeFileSync('public/data/venueList.json', JSON.stringify(venueList));
+      console.log('Updated');
+    });
+  });
 });
     
 // view engine setup

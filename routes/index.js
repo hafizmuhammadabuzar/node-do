@@ -785,12 +785,13 @@ var returnRouter = function(io) {
   });
 
   router.post('/saveUserVenue', (req, res, next) => {
-
+    
     sql = "insert into venues (facebook, longitude, fax, category, twitter, name, website, email, phone, latitude, description, is_user, status) values ('"+req.body.facebook+"', '"+req.body.longitude+"', '"+req.body.fax+"', '"+req.body.category+"', '"+req.body.twitter+"', '"+req.body.name+"', '"+req.body.website+"', '"+req.body.email+"', '"+req.body.phone+"', '"+req.body.latitude+"', '"+req.body.description+"', 1, 0)";
     db.query(sql, function(err, queryResponse){
       if(err) throw err;
       var result = {};
       result.status = 'Success';
+      res.header("Access-Control-Allow-Origin", "*");
       res.json(result);
     });
   });
@@ -798,7 +799,6 @@ var returnRouter = function(io) {
   router.get('/updateTokensV2', (req, res, next) => {
 
     sql = "select * from tokens";
-
     db.query(sql, function(err, data){
       if(err) throw err;
 
