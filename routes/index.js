@@ -223,24 +223,29 @@ var returnRouter = function(io) {
         async.forEach(companies, function(cmp, done){
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion.toLowerCase();
-          request.get(link, function(error, request, body){
+          request.get(link, function(error, bitTrexResponse, body){
             if(error) throw error;
 
-            var rates = JSON.parse(body);
-            var con = cmp.conversion;
-
-            if(rates.bid != null){
-              bitfinexObj[cmp.conversion] = {
-                'last': rates.last_price,
-                'bid': rates.bid,
-                'ask': rates.ask,
-                'high': rates.high,
-                'low': rates.low,
-                'volume': rates.volume
-              };  
-
-              ticker.Bitfinex = bitfinexObj;
-              done();
+            if(bitTrexResponse.status == 200){
+              var rates = JSON.parse(body);
+              var con = cmp.conversion;
+  
+              if(rates.bid != null){
+                bitfinexObj[cmp.conversion] = {
+                  'last': rates.last_price,
+                  'bid': rates.bid,
+                  'ask': rates.ask,
+                  'high': rates.high,
+                  'low': rates.low,
+                  'volume': rates.volume
+                };  
+  
+                ticker.Bitfinex = bitfinexObj;
+                done();
+              }
+              else{
+                done();
+              }
             }
             else{
               done();
