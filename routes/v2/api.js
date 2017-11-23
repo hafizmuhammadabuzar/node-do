@@ -63,7 +63,7 @@ var returnRouter = function(db) {
         if(req.params.type == 'minute'){
             
             offset = (offset==undefined || offset=='') ? 0 : offset;
-            sql = "select (select count(*) from minute_rates where company = '"+company+"' and conversion = '"+conversion+"') as total, time, close, high, low, open, volumefrom, volumeto from (select id, time, close, high, low, open, volumefrom, volumeto from `minute_rates` where company = '"+company+"' and conversion = '"+conversion+"' order by id DESC limit "+offset+", 2) tmp order by tmp.id ASC";
+            sql = "select (select count(*) from minute_rates where company = '"+company+"' and conversion = '"+conversion+"') as total, time, close, high, low, open, volumefrom, volumeto from (select id, time, close, high, low, open, volumefrom, volumeto from `minute_rates` where company = '"+company+"' and conversion = '"+conversion+"' order by id DESC limit "+offset+", 2000) tmp order by tmp.id ASC";
 
             // console.log(sql);
             // sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"' order by id DESC limit 2000";
@@ -75,7 +75,7 @@ var returnRouter = function(db) {
                     status : 'Success',
                     msg : company+' History',
                     data: ratesData,
-                    offset: parseInt(offset) + 2,
+                    offset: parseInt(offset) + 2000,
                     total: ratesData[0].total
                   }
               }else{
