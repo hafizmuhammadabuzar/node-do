@@ -6,7 +6,7 @@ const fs = require('fs');
 var androidPush = require('../helpers/android-push');
 var iosPush = require('../helpers/ios-push');
 var Promise = require('promise');
-var request = require('request')
+var request = require('request');
 
 /* GET home page. */
 var returnRouter = function(io) {
@@ -186,10 +186,10 @@ var returnRouter = function(io) {
 
     var rawdata = fs.readFileSync('public/data/tickers.json');  
     var ticker = JSON.parse(rawdata);
-
+    
     async.waterfall([
       function(callback){
-
+        
         var url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
         request.get(url, function(error, request, body){
           var rates = JSON.parse(body);

@@ -26,6 +26,7 @@
     "nodemon": "^1.12.1",
     "pm2": "^2.7.2",
     "poloniex-api-node": "^1.6.3",
+    "poloniex-unofficial": "^1.1.2",
     "promise": "^8.0.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.2",
