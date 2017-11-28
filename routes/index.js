@@ -221,12 +221,13 @@ var returnRouter = function(io) {
         if (err) callback(err);
         
         async.forEach(companies, function(cmp, done){
+          console.log('erew');
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion.toLowerCase();
-          request.get(link, function(error, bitTrexResponse, body){
+          request.get(link, function(error, bitFinexResponse, body){
             if(error) throw error;
 
-            if(bitTrexResponse.status == 200){
+            if(bitFinexResponse.statusCode == 200){
               var rates = JSON.parse(body);
               var con = cmp.conversion;
   
@@ -302,7 +303,6 @@ var returnRouter = function(io) {
               callback(error, null);
             }
             if(krakenResponse.status == 200){
-              // console.log(body);
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
 
@@ -736,7 +736,6 @@ var returnRouter = function(io) {
     request.get('http://coinmap.org/api/v1/venues/?mode=full', function(error, response, body){
       if(error) throw error;
 
-      // console.log(body);
       if(response.statusCode == 200){
         var dataArray = [];
         var data = JSON.parse(body);
@@ -771,7 +770,7 @@ var returnRouter = function(io) {
               done();
             });
           }, function(){
-            console.log('in loop end');
+            console.log('data end');
             sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
             db.query(sql, function(err, venueList){
               if(err) throw err;
@@ -823,6 +822,36 @@ var returnRouter = function(io) {
         res.send('Saved!');
       });
     });
+  });
+
+
+  router.get('/sendEmail', (req, res, next) => {
+    var nodemailer = require('nodemailer');
+
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+             user: 'hamzasynergistics@gmail.com',
+             pass: 'synergistics'
+         }
+     });
+
+     const mailOptions = {
+      from: 'hafizmabuzar@gmail.com',
+      to: 'hafizmabuzar@synergistics.pk',
+      subject: 'Nodejs Test Email',
+      html: '<p>Your html here</p>'
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+      if(err)
+        console.log(err)
+      else
+        console.log(info);
+
+        res.json(info);
+   });
+
   });
 
   return router;

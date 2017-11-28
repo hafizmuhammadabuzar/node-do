@@ -41,6 +41,8 @@ var returnRouter = function(db) {
             msg : 'Companies Conversions',
             data: companiesArray
         }
+
+        res.header("Access-Control-Allow-Origin", "*");
         res.json(result);
         });
     });
@@ -65,7 +67,6 @@ var returnRouter = function(db) {
             offset = (offset==undefined || offset=='') ? 0 : offset;
             sql = "select (select count(*) from minute_rates where company = '"+company+"' and conversion = '"+conversion+"') as total, time, close, high, low, open, volumefrom, volumeto from (select id, time, close, high, low, open, volumefrom, volumeto from `minute_rates` where company = '"+company+"' and conversion = '"+conversion+"' order by id DESC limit "+offset+", 500) tmp order by tmp.id ASC";
 
-            // console.log(sql);
             // sql = "select time, close, high, low, open, volumefrom, volumeto from minute_rates where company = '"+company+"' and conversion = '"+conversion+"' order by id DESC limit 2000";
     
             db.query(sql, function(err, ratesData){
@@ -85,6 +86,7 @@ var returnRouter = function(db) {
                 }
               }
     
+            res.header("Access-Control-Allow-Origin", "*");
             res.json(result);
             });
         }
@@ -403,23 +405,73 @@ var returnRouter = function(db) {
             // sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description, ((ACOS(SIN("+latitude+" * PI() / 180) * SIN(`latitude` * PI() / 180) + COS("+latitude+" * PI() / 180) * COS(`latitude` * PI() / 180) * COS(("+longitude+" - `longitude`) * PI() / 180)) * 180 / PI()) * 60 * 1.1515) AS DISTANCE FROM `venues` WHERE status = 1 having distance <= "+radius+" ORDER BY DISTANCE ASC";
             sql = "SELECT country, opening_hours, facebook, longitude as lon, latitude as lat, street, fax, category, city, twitter, name, state, website, email, phone, house_no as houseno, postcode, description FROM `venues` WHERE status = 1";
 
-            db.query(sql, (error, queryResponse) => {
-                if(error) throw error;
+            var getData = new promise(function(resolve, reject){
 
-                if(queryResponse.length > 0){
-
-                    result.status = 'Success';
-                    result.msg = 'Map Points';
-                    result.points = queryResponse;
-                    result.total = queryResponse.length;
-                }
-                else{
-                    result.status = 'Error';
-                    result.msg = 'No record found';
-                }
-                
-                res.json(result);
+                db.query(sql, (error, queryResponse) => {
+                    if(error) reject(error);
+    
+                    if(queryResponse.length > 0){
+                        resolve(queryResponse);
+                    }else{
+                        resolve(queryResponse);
+                    }
+                });
             });
+
+            var result;
+            getData.then(values => {
+                // console.log(values);
+                // res.json(values);
+                // if(values.length > 0){
+                //     result.status = 'Success';
+                //     result.msg = 'Map Points';
+                //     result.points = values;
+                //     result.total = values.length;
+                // }
+                // else{
+                //     result.status = 'Error';
+                //     result.msg = 'No data found';
+                // }
+
+                res.json(values);
+            }, reason => {
+                console.log(reason);
+                // res.send(reason);
+            })
+
+            // promise.all([getData]).then(values => {
+            //     var result;
+            //     if(values.length > 0){
+            //         result.status = 'Success';
+            //         result.msg = 'Map Points';
+            //         result.points = values;
+            //         result.total = values.length;
+            //     }
+            //     else{
+            //         result.status = 'Error';
+            //         result.msg = 'No data found';
+            //     }
+
+            //     res.json(result);
+            // });
+            
+            // db.query(sql, (error, queryResponse) => {
+            //     if(error) throw error;
+
+            //     if(queryResponse.length > 0){
+
+            //         result.status = 'Success';
+            //         result.msg = 'Map Points';
+            //         result.points = queryResponse;
+            //         result.total = queryResponse.length;
+            //     }
+            //     else{
+            //         result.status = 'Error';
+            //         result.msg = 'No record found';
+            //     }
+                
+            //     res.json(result);
+            // });
         // }
     });
 
