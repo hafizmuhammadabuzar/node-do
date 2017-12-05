@@ -221,7 +221,6 @@ var returnRouter = function(io) {
         if (err) callback(err);
         
         async.forEach(companies, function(cmp, done){
-          console.log('erew');
           var splitConversion = cmp.conversion.replace('/', '');
           link = "https://api.bitfinex.com/v1/pubticker/"+splitConversion.toLowerCase();
           request.get(link, function(error, bitFinexResponse, body){
@@ -330,7 +329,8 @@ var returnRouter = function(io) {
   ], function(err){
       var data = JSON.stringify(ticker);  
       fs.writeFileSync('public/data/tickers.json', data); 
-      res.send('Ticker Sent');
+      // res.send('Ticker Sent');
+      res.json(JSON.parse(data));
     });
   });
 

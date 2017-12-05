@@ -47,6 +47,12 @@ var returnRouter = function(db) {
         });
     });
 
+    router.get('/getTicker', function(req, res, next){
+        var rawdata = fs.readFileSync('public/data/tickers.json');  
+        var ticker = JSON.parse(rawdata);
+        res.json(ticker);
+    });
+
     router.get('/getHistory/:type', function(req, res, next){
         
         req.checkQuery('company', 'Company name required').notEmpty();
