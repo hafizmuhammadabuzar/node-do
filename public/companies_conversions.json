@@ -1,0 +1,1075 @@
+[
+    {
+      "company": "Bitfinex",
+      "conversions": [
+        {
+          "cur": "BCC/BTC"
+        },
+        {
+          "cur": "BCC/USD"
+        },
+        {
+          "cur": "BCH/BTC"
+        },
+        {
+          "cur": "BCH/ETH"
+        },
+        {
+          "cur": "BCH/USD"
+        },
+        {
+          "cur": "BCU/BTC"
+        },
+        {
+          "cur": "BCU/USD"
+        },
+        {
+          "cur": "BTC/USD"
+        },
+        {
+          "cur": "EOS/BTC"
+        },
+        {
+          "cur": "EOS/ETH"
+        },
+        {
+          "cur": "EOS/USD"
+        },
+        {
+          "cur": "ETC/BTC"
+        },
+        {
+          "cur": "ETC/USD"
+        },
+        {
+          "cur": "ETH/BTC"
+        },
+        {
+          "cur": "ETH/USD"
+        },
+        {
+          "cur": "IOT/BTC"
+        },
+        {
+          "cur": "IOT/ETH"
+        },
+        {
+          "cur": "IOT/USD"
+        },
+        {
+          "cur": "LTC/BTC"
+        },
+        {
+          "cur": "LTC/USD"
+        },
+        {
+          "cur": "NEO/BTC"
+        },
+        {
+          "cur": "NEO/ETH"
+        },
+        {
+          "cur": "NEO/USD"
+        },
+        {
+          "cur": "OMG/BTC"
+        },
+        {
+          "cur": "OMG/ETH"
+        },
+        {
+          "cur": "OMG/USD"
+        },
+        {
+          "cur": "RRT/BTC"
+        },
+        {
+          "cur": "RRT/USD"
+        },
+        {
+          "cur": "SAN/BTC"
+        },
+        {
+          "cur": "SAN/ETH"
+        },
+        {
+          "cur": "SAN/USD"
+        },
+        {
+          "cur": "XMR/BTC"
+        },
+        {
+          "cur": "XMR/USD"
+        },
+        {
+          "cur": "XRP/BTC"
+        },
+        {
+          "cur": "ZEC/BTC"
+        }
+      ]
+    },
+    {
+      "company": "Bitstamp",
+      "conversions": [
+        {
+          "cur": "BTC/USD"
+        },
+        {
+          "cur": "LTC/USD"
+        },
+        {
+          "cur": "LTC/EUR"
+        },
+        {
+          "cur": "BTC/EUR"
+        },
+        {
+          "cur": "XRP/EUR"
+        },
+        {
+          "cur": "EUR/USD"
+        },
+        {
+          "cur": "LTC/BTC"
+        },
+        {
+          "cur": "XRP/BTC"
+        },
+        {
+          "cur": "XRP/USD"
+        },
+        {
+          "cur": "ETH/BTC"
+        },
+        {
+          "cur": "ETH/EUR"
+        },
+        {
+          "cur": "ETH/USD"
+        }
+      ]
+    },
+    {
+      "company": "BitTrex",
+      "conversions": [
+        {
+          "cur": "1ST/BTC"
+        },
+        {
+          "cur": "1ST/ETH"
+        },
+        {
+          "cur": "2GIVE/BTC"
+        },
+        {
+          "cur": "ABY/BTC"
+        },
+        {
+          "cur": "ADT/BTC"
+        },
+        {
+          "cur": "ADT/ETH"
+        },
+        {
+          "cur": "ADX/BTC"
+        },
+        {
+          "cur": "ADX/ETH"
+        },
+        {
+          "cur": "AEON/BTC"
+        },
+        {
+          "cur": "AGRS/BTC"
+        },
+        {
+          "cur": "AMP/BTC"
+        },
+        {
+          "cur": "ANT/BTC"
+        },
+        {
+          "cur": "ANT/ETH"
+        },
+        {
+          "cur": "APX/BTC"
+        },
+        {
+          "cur": "ARDR/BTC"
+        },
+        {
+          "cur": "ARK/BTC"
+        },
+        {
+          "cur": "AUR/BTC"
+        },
+        {
+          "cur": "BAT/BTC"
+        },
+        {
+          "cur": "BAT/ETH"
+        },
+        {
+          "cur": "BAY/BTC"
+        },
+        {
+          "cur": "BCC/BTC"
+        },
+        {
+          "cur": "BCC/ETH"
+        },
+        {
+          "cur": "BCC/USDT"
+        },
+        {
+          "cur": "BCY/BTC"
+        },
+        {
+          "cur": "BITB/BTC"
+        },
+        {
+          "cur": "BLITZ/BTC"
+        },
+        {
+          "cur": "BLK/BTC"
+        },
+        {
+          "cur": "BLOCK/BTC"
+        },
+        {
+          "cur": "BNT/BTC"
+        },
+        {
+          "cur": "BNT/ETH"
+        },
+        {
+          "cur": "BRK/BTC"
+        },
+        {
+          "cur": "BRX/BTC"
+        },
+        {
+          "cur": "BSD/BTC"
+        },
+        {
+          "cur": "BTA/BTC"
+        },
+        {
+          "cur": "BTCD/BTC"
+        },
+        {
+          "cur": "BTC/USDT"
+        },
+        {
+          "cur": "BTS/BTC"
+        },
+        {
+          "cur": "BTS/ETH"
+        },
+        {
+          "cur": "BURST/BTC"
+        },
+        {
+          "cur": "BYC/BTC"
+        },
+        {
+          "cur": "CANN/BTC"
+        },
+        {
+          "cur": "CFI/BTC"
+        },
+        {
+          "cur": "CFI/ETH"
+        },
+        {
+          "cur": "CLAM/BTC"
+        },
+        {
+          "cur": "CLOAK/BTC"
+        },
+        {
+          "cur": "CLUB/BTC"
+        },
+        {
+          "cur": "COVAL/BTC"
+        },
+        {
+          "cur": "CPC/BTC"
+        },
+        {
+          "cur": "CRB/BTC"
+        },
+        {
+          "cur": "CRB/ETH"
+        },
+        {
+          "cur": "CRW/BTC"
+        },
+        {
+          "cur": "CURE/BTC"
+        },
+        {
+          "cur": "CVC/BTC"
+        },
+        {
+          "cur": "CVC/ETH"
+        },
+        {
+          "cur": "DAR/BTC"
+        },
+        {
+          "cur": "DASH/BTC"
+        },
+        {
+          "cur": "DASH/ETH"
+        },
+        {
+          "cur": "DASH/USDT"
+        },
+        {
+          "cur": "DCR/BTC"
+        },
+        {
+          "cur": "DCT/BTC"
+        },
+        {
+          "cur": "DGB/BTC"
+        },
+        {
+          "cur": "DGB/ETH"
+        },
+        {
+          "cur": "DGD/BTC"
+        },
+        {
+          "cur": "DGD/ETH"
+        },
+        {
+          "cur": "DMD/BTC"
+        },
+        {
+          "cur": "DOGE/BTC"
+        },
+        {
+          "cur": "DOPE/BTC"
+        },
+        {
+          "cur": "DRACO/BTC"
+        },
+        {
+          "cur": "DTB/BTC"
+        },
+        {
+          "cur": "DYN/BTC"
+        },
+        {
+          "cur": "EBST/BTC"
+        },
+        {
+          "cur": "EDG/BTC"
+        },
+        {
+          "cur": "EFL/BTC"
+        },
+        {
+          "cur": "EGC/BTC"
+        },
+        {
+          "cur": "EMC2/BTC"
+        },
+        {
+          "cur": "EMC/BTC"
+        },
+        {
+          "cur": "ENRG/BTC"
+        },
+        {
+          "cur": "ERC/BTC"
+        },
+        {
+          "cur": "ETC/BTC"
+        },
+        {
+          "cur": "ETC/ETH"
+        },
+        {
+          "cur": "ETC/USDT"
+        },
+        {
+          "cur": "ETH/BTC"
+        },
+        {
+          "cur": "ETH/USDT"
+        },
+        {
+          "cur": "EXCL/BTC"
+        },
+        {
+          "cur": "EXP/BTC"
+        },
+        {
+          "cur": "FAIR/BTC"
+        },
+        {
+          "cur": "FCT/BTC"
+        },
+        {
+          "cur": "FCT/ETH"
+        },
+        {
+          "cur": "FLDC/BTC"
+        },
+        {
+          "cur": "FLO/BTC"
+        },
+        {
+          "cur": "FTC/BTC"
+        },
+        {
+          "cur": "FUN/BTC"
+        },
+        {
+          "cur": "FUN/ETH"
+        },
+        {
+          "cur": "GAM/BTC"
+        },
+        {
+          "cur": "GAME/BTC"
+        },
+        {
+          "cur": "GBG/BTC"
+        },
+        {
+          "cur": "GBYTE/BTC"
+        },
+        {
+          "cur": "GCR/BTC"
+        },
+        {
+          "cur": "GEO/BTC"
+        },
+        {
+          "cur": "GLD/BTC"
+        },
+        {
+          "cur": "GNO/BTC"
+        },
+        {
+          "cur": "GNO/ETH"
+        },
+        {
+          "cur": "GNT/BTC"
+        },
+        {
+          "cur": "GNT/ETH"
+        },
+        {
+          "cur": "GOLOS/BTC"
+        },
+        {
+          "cur": "GRC/BTC"
+        },
+        {
+          "cur": "GRS/BTC"
+        },
+        {
+          "cur": "GUP/BTC"
+        },
+        {
+          "cur": "GUP/ETH"
+        },
+        {
+          "cur": "HMQ/BTC"
+        },
+        {
+          "cur": "HMQ/ETH"
+        },
+        {
+          "cur": "INCNT/BTC"
+        },
+        {
+          "cur": "INFX/BTC"
+        },
+        {
+          "cur": "IOC/BTC"
+        },
+        {
+          "cur": "ION/BTC"
+        },
+        {
+          "cur": "IOP/BTC"
+        },
+        {
+          "cur": "KMD/BTC"
+        },
+        {
+          "cur": "KORE/BTC"
+        },
+        {
+          "cur": "LBC/BTC"
+        },
+        {
+          "cur": "LGD/BTC"
+        },
+        {
+          "cur": "LGD/ETH"
+        },
+        {
+          "cur": "LMC/BTC"
+        },
+        {
+          "cur": "LSK/BTC"
+        },
+        {
+          "cur": "LTC/BTC"
+        },
+        {
+          "cur": "LTC/ETH"
+        },
+        {
+          "cur": "LTC/USDT"
+        },
+        {
+          "cur": "LUN/BTC"
+        },
+        {
+          "cur": "LUN/ETH"
+        },
+        {
+          "cur": "MAID/BT"
+        },
+        {
+          "cur": "MCO/BTC"
+        },
+        {
+          "cur": "MCO/ETH"
+        },
+        {
+          "cur": "MEME/BTC"
+        },
+        {
+          "cur": "MLN/BTC"
+        },
+        {
+          "cur": "MONA/BTC"
+        },
+        {
+          "cur": "MTL/BTC"
+        },
+        {
+          "cur": "MTL/ETH"
+        },
+        {
+          "cur": "MUE/BTC"
+        },
+        {
+          "cur": "MUSIC/BTC"
+        },
+        {
+          "cur": "MYST/BTC"
+        },
+        {
+          "cur": "MYST/ETH"
+        },
+        {
+          "cur": "NAV/BTC"
+        },
+        {
+          "cur": "NBT/BTC"
+        },
+        {
+          "cur": "NEO/BTC"
+        },
+        {
+          "cur": "NEO/ETH"
+        },
+        {
+          "cur": "NEO/USDT"
+        },
+        {
+          "cur": "NEOS/BTC"
+        },
+        {
+          "cur": "NLG/BTC"
+        },
+        {
+          "cur": "NMR/BTC"
+        },
+        {
+          "cur": "NMR/ETH"
+        },
+        {
+          "cur": "NXC/BTC"
+        },
+        {
+          "cur": "NXS/BTC"
+        },
+        {
+          "cur": "NXT/BTC"
+        },
+        {
+          "cur": "OK/BTC"
+        },
+        {
+          "cur": "OMG/BTC"
+        },
+        {
+          "cur": "OMG/ETH"
+        },
+        {
+          "cur": "OMG/USDT"
+        },
+        {
+          "cur": "OMNI/BTC"
+        },
+        {
+          "cur": "PART/BTC"
+        },
+        {
+          "cur": "PAY/BTC"
+        },
+        {
+          "cur": "PAY/ETH"
+        },
+        {
+          "cur": "PDC/BTC"
+        },
+        {
+          "cur": "PINK/BTC"
+        },
+        {
+          "cur": "PIVX/BTC"
+        },
+        {
+          "cur": "PKB/BTC"
+        },
+        {
+          "cur": "POT/BTC"
+        },
+        {
+          "cur": "PPC/BTC"
+        },
+        {
+          "cur": "PTC/BTC"
+        },
+        {
+          "cur": "PTOY/BTC"
+        },
+        {
+          "cur": "PTOY/ETH"
+        },
+        {
+          "cur": "QRL/BTC"
+        },
+        {
+          "cur": "QRL/ETH"
+        },
+        {
+          "cur": "QTUM/BTC"
+        },
+        {
+          "cur": "QTUM/ETH"
+        },
+        {
+          "cur": "QWARK/BTC"
+        },
+        {
+          "cur": "RADS/BTC"
+        },
+        {
+          "cur": "RBY/BTC"
+        },
+        {
+          "cur": "RDD/BTC"
+        },
+        {
+          "cur": "REP/BTC"
+        },
+        {
+          "cur": "REP/ETH"
+        },
+        {
+          "cur": "RISE/BTC"
+        },
+        {
+          "cur": "RLC/BTC"
+        },
+        {
+          "cur": "RLC/ETH"
+        },
+        {
+          "cur": "SAFEX/BTC"
+        },
+        {
+          "cur": "SBD/BTC"
+        },
+        {
+          "cur": "SC/BTC"
+        },
+        {
+          "cur": "SC/ETH"
+        },
+        {
+          "cur": "SEQ/BTC"
+        },
+        {
+          "cur": "SHIFT/BTC"
+        },
+        {
+          "cur": "SIB/BTC"
+        },
+        {
+          "cur": "SLR/BTC"
+        },
+        {
+          "cur": "SLS/BTC"
+        },
+        {
+          "cur": "SNGLS/BTC"
+        },
+        {
+          "cur": "SNGLS/ETH"
+        },
+        {
+          "cur": "SNRG/BTC"
+        },
+        {
+          "cur": "SNT/BTC"
+        },
+        {
+          "cur": "SNT/ETH"
+        },
+        {
+          "cur": "SPHR/BTC"
+        },
+        {
+          "cur": "SPR/BTC"
+        },
+        {
+          "cur": "START/BTC"
+        },
+        {
+          "cur": "STEEM/BTC"
+        },
+        {
+          "cur": "STORJ/BTC"
+        },
+        {
+          "cur": "STORJ/ETH"
+        },
+        {
+          "cur": "STRAT/BTC"
+        },
+        {
+          "cur": "STRAT/ETH"
+        },
+        {
+          "cur": "SWIFT/BTC"
+        },
+        {
+          "cur": "SWT/BTC"
+        },
+        {
+          "cur": "SYNX/BTC"
+        },
+        {
+          "cur": "SYS/BTC"
+        },
+        {
+          "cur": "THC/BTC"
+        },
+        {
+          "cur": "TIME/BTC"
+        },
+        {
+          "cur": "TIME/ETH"
+        },
+        {
+          "cur": "TKN/BTC"
+        },
+        {
+          "cur": "TKN/ETH"
+        },
+        {
+          "cur": "TKS/BTC"
+        },
+        {
+          "cur": "TRIG/BTC"
+        },
+        {
+          "cur": "TRST/BTC"
+        },
+        {
+          "cur": "TRST/ETH"
+        },
+        {
+          "cur": "TRUST/BTC"
+        },
+        {
+          "cur": "TX/BTC"
+        },
+        {
+          "cur": "UBQ/BTC"
+        },
+        {
+          "cur": "UNB/BTC"
+        },
+        {
+          "cur": "UNO/BTC"
+        },
+        {
+          "cur": "VIA/BTC"
+        },
+        {
+          "cur": "VOX/BTC"
+        },
+        {
+          "cur": "VRC/BTC"
+        },
+        {
+          "cur": "VRM/BTC"
+        },
+        {
+          "cur": "VTC/BTC"
+        },
+        {
+          "cur": "VTR/BTC"
+        },
+        {
+          "cur": "WAVES/BTC"
+        },
+        {
+          "cur": "WAVES/ETH"
+        },
+        {
+          "cur": "WINGS/BTC"
+        },
+        {
+          "cur": "WINGS/ETH"
+        },
+        {
+          "cur": "XAUR/BTC"
+        },
+        {
+          "cur": "XCP/BTC"
+        },
+        {
+          "cur": "XDN/BTC"
+        },
+        {
+          "cur": "XEL/BTC"
+        },
+        {
+          "cur": "XEM/BTC"
+        },
+        {
+          "cur": "XEM/ETH"
+        },
+        {
+          "cur": "XLM/BTC"
+        },
+        {
+          "cur": "XLM/ETH"
+        },
+        {
+          "cur": "XMG/BTC"
+        },
+        {
+          "cur": "XMR/BTC"
+        },
+        {
+          "cur": "XMR/ETH"
+        },
+        {
+          "cur": "XMR/USDT"
+        },
+        {
+          "cur": "XMY/BTC"
+        },
+        {
+          "cur": "XRP/BTC"
+        },
+        {
+          "cur": "XRP/ETH"
+        },
+        {
+          "cur": "XRP/USDT"
+        },
+        {
+          "cur": "XST/BTC"
+        },
+        {
+          "cur": "XVC/BTC"
+        },
+        {
+          "cur": "XVG/BTC"
+        },
+        {
+          "cur": "XWC/BTC"
+        },
+        {
+          "cur": "XZC/BTC"
+        },
+        {
+          "cur": "ZCL/BTC"
+        },
+        {
+          "cur": "ZEC/BTC"
+        },
+        {
+          "cur": "ZEC/ETH"
+        },
+        {
+          "cur": "ZEC/USDT"
+        },
+        {
+          "cur": "ZEN/BTC"
+        }
+      ]
+    },
+    {
+      "company": "Kraken",
+      "conversions": [
+        {
+          "cur": "BCH/EUR"
+        },
+        {
+          "cur": "BCH/USD"
+        },
+        {
+          "cur": "BCH/XBT"
+        },
+        {
+          "cur": "DASH/EUR"
+        },
+        {
+          "cur": "DASH/USD"
+        },
+        {
+          "cur": "DASH/XBT"
+        },
+        {
+          "cur": "EOS/ETH"
+        },
+        {
+          "cur": "EOS/XBT"
+        },
+        {
+          "cur": "ETC/ETH"
+        },
+        {
+          "cur": "ETC/EUR"
+        },
+        {
+          "cur": "ETC/USD"
+        },
+        {
+          "cur": "ETC/XBT"
+        },
+        {
+          "cur": "ETH/CAD"
+        },
+        {
+          "cur": "ETH/EUR"
+        },
+        {
+          "cur": "ETH/GBP"
+        },
+        {
+          "cur": "ETH/JPY"
+        },
+        {
+          "cur": "ETH/USD"
+        },
+        {
+          "cur": "ETH/XBT"
+        },
+        {
+          "cur": "GNO/ETH"
+        },
+        {
+          "cur": "GNO/XBT"
+        },
+        {
+          "cur": "ICN/ETH"
+        },
+        {
+          "cur": "ICN/XBT"
+        },
+        {
+          "cur": "LTC/EUR"
+        },
+        {
+          "cur": "LTC/USD"
+        },
+        {
+          "cur": "LTC/XBT"
+        },
+        {
+          "cur": "MLN/ETH"
+        },
+        {
+          "cur": "MLN/XBT"
+        },
+        {
+          "cur": "REP/ETH"
+        },
+        {
+          "cur": "REP/EUR"
+        },
+        {
+          "cur": "REP/XBT"
+        },
+        {
+          "cur": "USDT/USD"
+        },
+        {
+          "cur": "XBT/CAD"
+        },
+        {
+          "cur": "XBT/EUR"
+        },
+        {
+          "cur": "XBT/GBP"
+        },
+        {
+          "cur": "XBT/JPY"
+        },
+        {
+          "cur": "XBT/USD"
+        },
+        {
+          "cur": "XDG/XBT"
+        },
+        {
+          "cur": "XMR/EUR"
+        },
+        {
+          "cur": "XMR/USD"
+        },
+        {
+          "cur": "XMR/XBT"
+        },
+        {
+          "cur": "XRP/EUR"
+        },
+        {
+          "cur": "XRP/USD"
+        },
+        {
+          "cur": "XRP/XBT"
+        },
+        {
+          "cur": "ZEC/EUR"
+        },
+        {
+          "cur": "ZEC/USD"
+        },
+        {
+          "cur": "ZEC/XBT"
+        }
+      ]
+    }
+  ]

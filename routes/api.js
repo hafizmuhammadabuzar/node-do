@@ -14,35 +14,59 @@ var sql;
 var result = {};
 
   router.get('/companiesConversions', function(req, res) {
-    sql = "select company, conversion from company_conversions order by company";
-    db.query(sql, function (err, companies) {
-      if (err) throw err;      
-      var company = '';
-      var companiesArray = [];
+    var filePath = 'public/companies_conversions.json';
+    var companiesArray = [];
+
+    if(fs.existsSync(filePath)){
+      var rawdata = fs.readFileSync(filePath);
+      var companiesArray = JSON.parse(rawdata);
       
-      companies.forEach(function(value){
-        if(value.company != company){
-          var conversions = [];
-
-          companies.forEach(function(innerValue){
-            if(innerValue.company == value.company){
-              conversions.push({'cur': innerValue.conversion});
-            }
-          })
-
-          companiesArray.push({'company': value.company, 'conversions': conversions});
-        }
-
-        company = value.company;
-      })
-
       var result = {
         status : 'Success',
         msg : 'Companies Conversions',
         data: companiesArray
       }
       res.json(result);
-    });
+    }
+    else{
+      var result = {
+        status : 'Error',
+        msg : 'Some error occurred',
+        data: companiesArray
+        }
+
+        res.json(result);
+    }
+
+    // sql = "select company, conversion from company_conversions order by company";
+    // db.query(sql, function (err, companies) {
+    //   if (err) throw err;      
+    //   var company = '';
+    //   var companiesArray = [];?
+      
+    //   companies.forEach(function(value){
+    //     if(value.company != company){
+    //       var conversions = [];
+
+    //       companies.forEach(function(innerValue){
+    //         if(innerValue.company == value.company){
+    //           conversions.push({'cur': innerValue.conversion});
+    //         }
+    //       })
+
+    //       companiesArray.push({'company': value.company, 'conversions': conversions});
+    //     }
+
+    //     company = value.company;
+    //   })
+
+    //   var result = {
+    //     status : 'Success',
+    //     msg : 'Companies Conversions',
+    //     data: companiesArray
+    //   }
+    //   res.json(result);
+    // });
   });
 
   router.get('/getHistory/:type', function(req, res, next){
