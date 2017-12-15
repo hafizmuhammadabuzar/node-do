@@ -54,7 +54,7 @@ var returnRouter = function(io) {
                 rates = rates.Data;
                 
                 if(rates.length > 0){
-                  var jsonLastElement = jsonData[0];
+                  var jsonLastElement = jsonData[jsonData.length-1];
                   var ratesLastElement = rates[0];
                   if(jsonLastElement.time != ratesLastElement.time){
                     jsonData.push(ratesLastElement);
