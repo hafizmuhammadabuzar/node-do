@@ -715,6 +715,7 @@ var returnRouter = function(io) {
           request.get(link, function (error, response, body) {
             var rates = JSON.parse(body);
             rates = rates.Data;
+            rates = rates.splice(-1, 1);
             if(rates.length > 0){
               fs.writeFileSync(filePath, JSON.stringify(rates));
               console.log(cmp.company+' - '+cmp.conversion);
