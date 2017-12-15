@@ -47,15 +47,15 @@ var returnRouter = function(io) {
               jsonData = ('Data' in jsonData) ? jsonData.Data : jsonData;
               const timestamp = Math.floor(new Date() / 1000);
 
-              link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2&toTs="+timestamp+"&e="+cmp.company;
+              link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=1&e="+cmp.company;
               
               request.get(link, function (error, response, body) {
                 var rates = JSON.parse(body);
                 rates = rates.Data;
                 
                 if(rates.length > 0){
-                  var jsonLastElement = jsonData[jsonData.length-1];
-                  var ratesLastElement = rates[rates.length-1];
+                  var jsonLastElement = jsonData[0];
+                  var ratesLastElement = rates[0];
                   if(jsonLastElement.time != ratesLastElement.time){
                     jsonData.push(ratesLastElement);
                     fs.writeFileSync(filePath, JSON.stringify(jsonData));
@@ -710,7 +710,7 @@ var returnRouter = function(io) {
           
           var conv = cmp.conversion.split('/');
           var filePath = 'public/data/'+cmp.company+'/'+dirName+'/'+conv[0]+'-'+conv[1]+'.json';
-          link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=200&toTs="+timestamp+"&e="+cmp.company;
+          link = "https://min-api.cryptocompare.com/data/histo"+type+"?fsym="+conv[0]+"&tsym="+conv[1]+"&limit=2000&e="+cmp.company;
 
           request.get(link, function (error, response, body) {
             var rates = JSON.parse(body);
