@@ -444,22 +444,28 @@ router.get('/sellerTicker', function(req, res, next){
         if(error){
           callback(error, null);
         }
-        if(coinroomResponse.statusCode == 200){
-          var rates = JSON.parse(body);
-          var market = tickers['markets'];
 
-          quadrigacxObj = {
-            'market': 'Quadrigacx',
-            'price': rates.last.toString(),
-            'volume': parseFloat(rates.volume)
-          };
-              
-          market.push(quadrigacxObj);
-          tickers.markets = market;
-          console.log('Quadrigacx ticker done');
-        }
-        else{
-          console.log('Quadrigacx ticker empty');
+        var market = tickers['markets'];
+        if(market !== undefined){
+          if(coinroomResponse.statusCode == 200){
+            var rates = JSON.parse(body);
+  
+            quadrigacxObj = {
+              'market': 'Quadrigacx',
+              'price': rates.last.toString(),
+              'volume': parseFloat(rates.volume)
+            };
+                
+            market.push(quadrigacxObj);
+            tickers.markets = market;
+            console.log('Quadrigacx ticker done');
+          }
+          else{
+            tickers.markets = oldData[13];
+            console.log('Quadrigacx ticker empty');
+          }
+        }else{
+          tickers.markets = oldData[13];
         }
         callback(null);
       });
