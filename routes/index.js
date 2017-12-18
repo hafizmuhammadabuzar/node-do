@@ -409,6 +409,7 @@ router.get('/sellerTicker', function(req, res, next){
         }
 
         var market = tickers['markets'];
+        console.log(market);
         if(coinroomResponse.statusCode == 200){
           rates = JSON.parse(body);
 
@@ -417,7 +418,7 @@ router.get('/sellerTicker', function(req, res, next){
             'price': rates.last.toString(),
             'volume': parseFloat(rates.volume)
           };
-              
+             
           market.push(coinroomObj);
           tickers.markets = market;
           console.log('Coinroom ticker done');
