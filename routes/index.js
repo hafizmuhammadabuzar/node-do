@@ -341,12 +341,12 @@ var returnRouter = function(io) {
 // Ticker for XCoin Seller 
 router.get('/sellerTicker', function(req, res, next){
   
-    var tickers = {};
+  var tickers = {};
 
-    var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
-    var oldData = JSON.parse(rawdata);
+  var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
+  var oldData = JSON.parse(rawdata);
       
-    async.waterfall([
+  async.waterfall([
     function(callback){
         
       link = "https://api.cryptonator.com/api/full/btc-usd";
@@ -402,6 +402,7 @@ router.get('/sellerTicker', function(req, res, next){
     function(callback){
       var coinroomObj = {};
         
+      console.log(tickers);
       link = "https://coinroom.com/api/ticker/BTC/USD";
       request.get(link, function(error, coinroomResponse, body){
         if(error){
