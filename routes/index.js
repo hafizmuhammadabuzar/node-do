@@ -407,9 +407,10 @@ router.get('/sellerTicker', function(req, res, next){
         if(error){
           callback(error, null);
         }
+
+        var market = tickers['markets'];
         if(coinroomResponse.statusCode == 200){
           rates = JSON.parse(body);
-          var market = tickers['markets'];
 
           coinroomObj = {
             'market': 'Coinroom',
@@ -422,6 +423,8 @@ router.get('/sellerTicker', function(req, res, next){
           console.log('Coinroom ticker done');
         }
         else{
+          market.push(oldData[12]);
+          tickers.markets = oldData[12];
           console.log('Coinroom ticker empty');
         }
         callback(null);
