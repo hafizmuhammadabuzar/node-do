@@ -305,7 +305,7 @@ var returnRouter = function(io) {
             if(error){
               callback(error, null);
             }
-            if(krakenResponse.status == 200){
+            if(krakenResponse.statusCode == 200){
               var rates = JSON.parse(body);
               var rates = rates.result[conversion];
 
@@ -337,6 +337,130 @@ var returnRouter = function(io) {
       res.json(JSON.parse(data));
     });
   });
+
+// Ticker for XCoin Seller 
+router.get('/sellerTicker', function(req, res, next){
+  
+    var tickers = {};
+      
+    async.waterfall([
+    function(callback){
+        
+      link = "https://api.cryptonator.com/api/full/btc-usd";
+      request.get(link, function(error, response, body){
+        if(error){
+          callback(error, null);
+        }
+        
+        if(response.statusCode == 200){
+          var rates = JSON.parse(body);
+          tickers = rates['ticker'];
+
+          console.log('seller rates found');
+        }
+        else{
+          console.log('seller rates not found');
+        }
+        callback(null);
+      });
+    },
+    function(callback){
+      var bitfinexObj = {};
+        
+      link = "https://api.bitfinex.com/v1/pubticker/btcusd";
+      request.get(link, function(error, bitfinexResponse, body){
+        if(error){
+          callback(error, null);
+        }
+        if(bitfinexResponse.statusCode == 200){
+          rates = JSON.parse(body);
+          var market = tickers['markets'];
+
+          bitfinexObj = {
+            'market': 'Bitfinex',
+            'price': rates.last_price,
+            'volume': parseFloat(rates.volume)
+          };
+              
+          market.push(bitfinexObj);
+          tickers.markets = market;
+          console.log('Bitfinex ticker done');
+        }
+        else{
+          console.log('Bitfinex ticker empty');
+        }
+        callback(null);
+      });
+    },
+    function(callback){
+      var coinroomObj = {};
+        
+      link = "https://coinroom.com/api/ticker/BTC/USD";
+      request.get(link, function(error, coinroomResponse, body){
+        if(error){
+          callback(error, null);
+        }
+        if(coinroomResponse.statusCode == 200){
+          rates = JSON.parse(body);
+          var market = tickers['markets'];
+
+          coinroomObj = {
+            'market': 'Coinroom',
+            'price': rates.last.toString(),
+            'volume': parseFloat(rates.volume)
+          };
+              
+          market.push(coinroomObj);
+          tickers.markets = market;
+          console.log('Coinroom ticker done');
+        }
+        else{
+          console.log('Coinroom ticker empty');
+        }
+        callback(null);
+      });
+    },
+    function(callback){
+      var quadrigacxObj = {};
+        
+      link = "https://api.quadrigacx.com/v2/ticker?book=btc_usd";
+      request.get(link, function(error, coinroomResponse, body){
+        if(error){
+          callback(error, null);
+        }
+        if(coinroomResponse.statusCode == 200){
+          var rates = JSON.parse(body);
+          var market = tickers['markets'];
+
+          quadrigacxObj = {
+            'market': 'Quadrigacx',
+            'price': rates.last.toString(),
+            'volume': parseFloat(rates.volume)
+          };
+              
+          market.push(quadrigacxObj);
+          tickers.markets = market;
+          console.log('Quadrigacx ticker done');
+        }
+        else{
+          console.log('Quadrigacx ticker empty');
+        }
+        callback(null);
+      });
+    }
+  ], function(err){
+      var data = JSON.stringify(tickers);  
+      fs.writeFileSync('public/data/sellerTicker.json', data); 
+      res.json(JSON.parse(data));
+    });
+  });
+
+router.get('/cron/sellerTicker', function(req, res, next){
+  var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
+  var ticker = JSON.parse(rawdata);
+  io.sockets.emit('sellerTicker', {'rates': ticker});
+  res.json(ticker);
+});
 
   // send alerts to users and inactive 
   router.get('/sendAlerts', function(req, res, next){
