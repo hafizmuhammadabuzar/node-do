@@ -409,27 +409,21 @@ router.get('/sellerTicker', function(req, res, next){
         }
 
         var market = tickers['markets'];
-        if(market !== undefined){
+        if(coinroomResponse.statusCode == 200){
+          rates = JSON.parse(body);
 
-          if(coinroomResponse.statusCode == 200){
-            rates = JSON.parse(body);
-  
-            coinroomObj = {
-              'market': 'Coinroom',
-              'price': rates.last.toString(),
-              'volume': parseFloat(rates.volume)
-            };
-               
-            market.push(coinroomObj);
-            tickers.markets = market;
-            console.log('Coinroom ticker done');
-          }
-          else{
-            tickers.markets = oldData[12];
-            console.log('Coinroom ticker empty');
-          }
+          coinroomObj = {
+            'market': 'Coinroom',
+            'price': rates.last.toString(),
+            'volume': parseFloat(rates.volume)
+          };
+             
+          market.push(coinroomObj);
+          tickers.markets = market;
+          console.log('Coinroom ticker done');
         }
         else{
+          market.push(oldData[12]);
           tickers.markets = oldData[12];
           console.log('Coinroom ticker empty');
         }
@@ -444,28 +438,22 @@ router.get('/sellerTicker', function(req, res, next){
         if(error){
           callback(error, null);
         }
+        if(coinroomResponse.statusCode == 200){
+          var rates = JSON.parse(body);
+          var market = tickers['markets'];
 
-        var market = tickers['markets'];
-        if(market !== undefined){
-          if(coinroomResponse.statusCode == 200){
-            var rates = JSON.parse(body);
-  
-            quadrigacxObj = {
-              'market': 'Quadrigacx',
-              'price': rates.last.toString(),
-              'volume': parseFloat(rates.volume)
-            };
-                
-            market.push(quadrigacxObj);
-            tickers.markets = market;
-            console.log('Quadrigacx ticker done');
-          }
-          else{
-            tickers.markets = oldData[13];
-            console.log('Quadrigacx ticker empty');
-          }
-        }else{
-          tickers.markets = oldData[13];
+          quadrigacxObj = {
+            'market': 'Quadrigacx',
+            'price': rates.last.toString(),
+            'volume': parseFloat(rates.volume)
+          };
+              
+          market.push(quadrigacxObj);
+          tickers.markets = market;
+          console.log('Quadrigacx ticker done');
+        }
+        else{
+          console.log('Quadrigacx ticker empty');
         }
         callback(null);
       });
