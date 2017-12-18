@@ -409,22 +409,27 @@ router.get('/sellerTicker', function(req, res, next){
         }
 
         var market = tickers['markets'];
-        console.log(market);
-        if(coinroomResponse.statusCode == 200){
-          rates = JSON.parse(body);
+        if(market !== undefined){
 
-          coinroomObj = {
-            'market': 'Coinroom',
-            'price': rates.last.toString(),
-            'volume': parseFloat(rates.volume)
-          };
-             
-          market.push(coinroomObj);
-          tickers.markets = market;
-          console.log('Coinroom ticker done');
+          if(coinroomResponse.statusCode == 200){
+            rates = JSON.parse(body);
+  
+            coinroomObj = {
+              'market': 'Coinroom',
+              'price': rates.last.toString(),
+              'volume': parseFloat(rates.volume)
+            };
+               
+            market.push(coinroomObj);
+            tickers.markets = market;
+            console.log('Coinroom ticker done');
+          }
+          else{
+            tickers.markets = oldData[12];
+            console.log('Coinroom ticker empty');
+          }
         }
         else{
-          market.push(oldData[12]);
           tickers.markets = oldData[12];
           console.log('Coinroom ticker empty');
         }
