@@ -342,6 +342,9 @@ var returnRouter = function(io) {
 router.get('/sellerTicker', function(req, res, next){
   
     var tickers = {};
+
+    var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
+    var oldData = JSON.parse(rawdata);
       
     async.waterfall([
     function(callback){
@@ -372,21 +375,25 @@ router.get('/sellerTicker', function(req, res, next){
         if(error){
           callback(error, null);
         }
+        
+        var market = tickers['markets'];
+        
         if(bitfinexResponse.statusCode == 200){
           rates = JSON.parse(body);
-          var market = tickers['markets'];
-
+          
           bitfinexObj = {
             'market': 'Bitfinex',
             'price': rates.last_price,
             'volume': parseFloat(rates.volume)
           };
-              
+          
           market.push(bitfinexObj);
           tickers.markets = market;
           console.log('Bitfinex ticker done');
         }
         else{
+          market.push(oldData[11]);
+          tickers.markets = oldData[11];
           console.log('Bitfinex ticker empty');
         }
         callback(null);
