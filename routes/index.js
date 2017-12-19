@@ -345,7 +345,7 @@ router.get('/sellerTicker', function(req, res, next){
 
   var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
   var oldData = JSON.parse(rawdata);
-      
+  
   async.waterfall([
     function(callback){
         
@@ -387,13 +387,11 @@ router.get('/sellerTicker', function(req, res, next){
             'volume': parseFloat(rates.volume)
           };
           
-          market.push(bitfinexObj);
-          tickers.markets = market;
+          tickers['markets'].push(bitfinexObj);
           console.log('Bitfinex ticker done');
         }
         else{
-          market.push(oldData[11]);
-          tickers.markets = oldData[11];
+          tickers['markets'].push(oldData['markets'][10]);
           console.log('Bitfinex ticker empty');
         }
         callback(null);
@@ -402,7 +400,6 @@ router.get('/sellerTicker', function(req, res, next){
     function(callback){
       var coinroomObj = {};
         
-      console.log(tickers);
       link = "https://coinroom.com/api/ticker/BTC/USD";
       request.get(link, function(error, coinroomResponse, body){
         if(error){
@@ -419,13 +416,11 @@ router.get('/sellerTicker', function(req, res, next){
             'volume': parseFloat(rates.volume)
           };
              
-          market.push(coinroomObj);
-          tickers.markets = market;
+          tickers['markets'].push(coinroomObj);
           console.log('Coinroom ticker done');
         }
         else{
-          market.push(oldData[12]);
-          tickers.markets = oldData[12];
+          tickers['markets'].push(oldData['markets'][11]);
           console.log('Coinroom ticker empty');
         }
         callback(null);
@@ -449,8 +444,7 @@ router.get('/sellerTicker', function(req, res, next){
             'volume': parseFloat(rates.volume)
           };
               
-          market.push(quadrigacxObj);
-          tickers.markets = market;
+          tickers['markets'].push(quadrigacxObj);
           console.log('Quadrigacx ticker done');
         }
         else{
