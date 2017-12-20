@@ -14,29 +14,53 @@ var sql;
 var result = {};
 
   router.get('/companiesConversions', function(req, res) {
-    var filePath = 'public/companies_conversions.json';
-    var companiesArray = [];
-
-    if(fs.existsSync(filePath)){
-      var rawdata = fs.readFileSync(filePath);
-      var companiesArray = JSON.parse(rawdata);
+    sql = "select company, conversion from company_conversions";
+    db.query(sql, function (err, companies) {
+      if (err) throw err;      
+      var company = '';
+      var result = [];
       
-      var result = {
-        status : 'Success',
-        msg : 'Companies Conversions',
-        data: companiesArray
-      }
-      res.json(result);
-    }
-    else{
-      var result = {
-        status : 'Error',
-        msg : 'Some error occurred',
-        data: companiesArray
+      companies.forEach(function(value){
+        if(value.company != company){
+          var conversions = [];
+
+          companies.forEach(function(innerValue){
+            if(innerValue.company == value.company){
+              conversions.push({'cur': innerValue.conversion});
+            }
+          })
+
+          result.push({'company': value.company, 'conversions': conversions});
         }
 
-        res.json(result);
-    }
+        company = value.company;
+      })
+
+      res.json(result);
+    });
+    // var filePath = 'public/companies_conversions.json';
+    // var companiesArray = [];
+
+    // if(fs.existsSync(filePath)){
+    //   var rawdata = fs.readFileSync(filePath);
+    //   var companiesArray = JSON.parse(rawdata);
+      
+    //   var result = {
+    //     status : 'Success',
+    //     msg : 'Companies Conversions',
+    //     data: companiesArray
+    //   }
+    //   res.json(result);
+    // }
+    // else{
+    //   var result = {
+    //     status : 'Error',
+    //     msg : 'Some error occurred',
+    //     data: companiesArray
+    //     }
+
+    //     res.json(result);
+    // }
 
     // sql = "select company, conversion from company_conversions order by company";
     // db.query(sql, function (err, companies) {
