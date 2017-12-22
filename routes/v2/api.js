@@ -52,6 +52,13 @@ var returnRouter = function(db) {
         var ticker = JSON.parse(rawdata);
         res.json(ticker);
     });
+    
+    router.get('/getSellerTicker', function(req, res, next){
+        
+        var rawdata = fs.readFileSync('public/data/sellerTicker.json');  
+        var ticker = JSON.parse(rawdata);
+        res.json(ticker);
+    });
 
     router.get('/getHistory/:type', function(req, res, next){
         

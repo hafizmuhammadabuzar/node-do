@@ -914,10 +914,10 @@ router.get('/cron/sellerTicker', function(req, res, next){
           });
         }
         else{
-          res.send('No record found!');
+          console.log('No record found!');
         }
       }else{
-        res.send('Empty Repsonse');
+        console.log('Empty Repsonse');
       }
     });
   });
