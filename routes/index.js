@@ -55,11 +55,11 @@ var returnRouter = function(io) {
                 
                 if(rates.length > 0){
                   var jsonLastElement = jsonData[jsonData.length-1];
-                  if(type == 'day'){
+                  // if(type == 'day'){
                     var ratesLastElement = rates[0];
-                  }else{
-                    var ratesLastElement = rates[rates.length-1];
-                  }
+                  // }else{
+                  //   var ratesLastElement = rates[rates.length-1];
+                  // }
                   if(jsonLastElement.time != ratesLastElement.time){
                     jsonData.push(ratesLastElement);
                     fs.writeFileSync(filePath, JSON.stringify(jsonData));
