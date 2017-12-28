@@ -395,10 +395,17 @@ router.get('/sellerTicker', function(req, res, next){
         'price': tickerData['Bitfinex']['BTC/USD']['last'],
         'volume': parseFloat(tickerData['Bitfinex']['BTC/USD']['volume'])
       };
+      // Kraken rate
+      var krakenObj = {
+        'market': 'Kraken',
+        'price': tickerData['Kraken']['XBT/USD']['last'],
+        'volume': parseFloat(tickerData['Kraken']['XBT/USD']['volume'])
+      };
       
       tickers['markets'].push(bitstampObj);
       tickers['markets'].push(bittrexObj);
       tickers['markets'].push(bitfinexObj);
+      tickers['markets'][4] = krakenObj;
       console.log('Avail ticker done');
     
       callback(null);
