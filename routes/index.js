@@ -376,9 +376,6 @@ router.get('/sellerTicker', function(req, res, next){
       var tickerData = JSON.parse(siteTicker);
         
       var market = tickers['markets'];
-
-      // res.json(tickers);
-      // console.log(tickerData); process.exit(0);
       
       // Bitstamp rate
       var bitstampObj = {
@@ -387,7 +384,7 @@ router.get('/sellerTicker', function(req, res, next){
         'volume': parseFloat(tickerData['Bitstamp']['BTC/USD']['volume'])
       };
       // BitTrex rate
-      var bitTrexObj = {
+      var bittrexObj = {
         'market': 'BitTrex',
         'price': tickerData['BitTrex']['BTC/USDT']['last'],
         'volume': parseFloat(tickerData['BitTrex']['BTC/USDT']['volume'])
@@ -400,7 +397,7 @@ router.get('/sellerTicker', function(req, res, next){
       };
       
       tickers['markets'].push(bitstampObj);
-      tickers['markets'].push(bitTrexObj);
+      tickers['markets'].push(bittrexObj);
       tickers['markets'].push(bitfinexObj);
       console.log('Avail ticker done');
     
