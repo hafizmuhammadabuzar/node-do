@@ -385,7 +385,7 @@ router.get('/sellerTicker', function(req, res, next){
       };
       // BitTrex rate
       var bittrexObj = {
-        'market': 'BitTrex',
+        'market': 'Bittrex',
         'price': tickerData['BitTrex']['BTC/USDT']['last'],
         'volume': parseFloat(tickerData['BitTrex']['BTC/USDT']['volume'])
       };
