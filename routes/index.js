@@ -358,7 +358,9 @@ router.get('/sellerTicker', function(req, res, next){
         if(response.statusCode == 200){
           var rates = JSON.parse(body);
           tickers = rates['ticker'];
+          tickers['markets'] = tickers['markets'].splice(2);
 
+          // console.log(tickers);
           console.log('seller rates found');
         }
         else{
@@ -368,35 +370,72 @@ router.get('/sellerTicker', function(req, res, next){
       });
     },
     function(callback){
-      var bitfinexObj = {};
+      // var availObj = {};
+
+      var siteTicker = fs.readFileSync('public/data/tickers.json');  
+      var tickerData = JSON.parse(siteTicker);
         
-      link = "https://api.bitfinex.com/v1/pubticker/btcusd";
-      request.get(link, function(error, bitfinexResponse, body){
-        if(error){
-          callback(error, null);
-        }
-        
-        var market = tickers['markets'];
-        
-        if(bitfinexResponse.statusCode == 200){
-          rates = JSON.parse(body);
-          
-          bitfinexObj = {
-            'market': 'Bitfinex',
-            'price': rates.last_price,
-            'volume': parseFloat(rates.volume)
-          };
-          
-          tickers['markets'].push(bitfinexObj);
-          console.log('Bitfinex ticker done');
-        }
-        else{
-          tickers['markets'].push(oldData['markets'][10]);
-          console.log('Bitfinex ticker empty');
-        }
-        callback(null);
-      });
+      var market = tickers['markets'];
+
+      // res.json(tickers);
+      // console.log(tickerData); process.exit(0);
+      
+      // Bitstamp rate
+      var bitstampObj = {
+        'market': 'Bitstamp',
+        'price': tickerData['Bitstamp']['BTC/USD']['last'],
+        'volume': parseFloat(tickerData['Bitstamp']['BTC/USD']['volume'])
+      };
+      // BitTrex rate
+      var bitTrexObj = {
+        'market': 'BitTrex',
+        'price': tickerData['BitTrex']['BTC/USDT']['last'],
+        'volume': parseFloat(tickerData['BitTrex']['BTC/USDT']['volume'])
+      };
+      // Bitfinex rate
+      var bitfinexObj = {
+        'market': 'Bitfinex',
+        'price': tickerData['Bitfinex']['BTC/USD']['last'],
+        'volume': parseFloat(tickerData['Bitfinex']['BTC/USD']['volume'])
+      };
+      
+      tickers['markets'].push(bitstampObj);
+      tickers['markets'].push(bitTrexObj);
+      tickers['markets'].push(bitfinexObj);
+      console.log('Avail ticker done');
+    
+      callback(null);
     },
+    // function(callback){
+    //   var bitfinexObj = {};
+        
+    //   link = "https://api.bitfinex.com/v1/pubticker/btcusd";
+    //   request.get(link, function(error, bitfinexResponse, body){
+    //     if(error){
+    //       callback(error, null);
+    //     }
+        
+    //     var market = tickers['markets'];
+        
+    //     if(bitfinexResponse.statusCode == 200){
+    //       rates = JSON.parse(body);
+          
+    //       bitfinexObj = {
+    //         'market': 'Bitfinex',
+    //         'price': rates.last_price,
+    //         'volume': parseFloat(rates.volume)
+    //       };
+          
+    //       tickers['markets'].push(bitfinexObj);
+    //       console.log('Bitfinex ticker done');
+    //     }
+    //     else{
+    //       tickers['markets'].push(oldData['markets'][10]);
+    //       console.log('Bitfinex ticker empty');
+    //     }
+    //     callback(null);
+    //   });
+    // },
     function(callback){
       var coinroomObj = {};
         
