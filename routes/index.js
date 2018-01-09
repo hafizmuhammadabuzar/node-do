@@ -234,20 +234,24 @@ var returnRouter = function(io) {
               var rates = JSON.parse(body);
               var con = cmp.conversion;
   
-              if(rates.bid != null){
-                bitfinexObj[cmp.conversion] = {
-                  'last': rates.last_price,
-                  'bid': rates.bid,
-                  'ask': rates.ask,
-                  'high': rates.high,
-                  'low': rates.low,
-                  'volume': rates.volume
-                };  
-  
-                ticker.Bitfinex = bitfinexObj;
-                done();
-              }
-              else{
+              if(!rates.error){
+                if(rates.bid != null){
+                  bitfinexObj[cmp.conversion] = {
+                    'last': rates.last_price,
+                    'bid': rates.bid,
+                    'ask': rates.ask,
+                    'high': rates.high,
+                    'low': rates.low,
+                    'volume': rates.volume
+                  };  
+    
+                  ticker.Bitfinex = bitfinexObj;
+                  done();
+                }
+                else{
+                  done();
+                }
+              }else{
                 done();
               }
             }
@@ -333,7 +337,6 @@ var returnRouter = function(io) {
   ], function(err){
       var data = JSON.stringify(ticker);  
       fs.writeFileSync('public/data/tickers.json', data); 
-      // res.send('Ticker Sent');
       res.json(JSON.parse(data));
     });
   });
@@ -389,57 +392,21 @@ router.get('/sellerTicker', function(req, res, next){
         'price': tickerData['BitTrex']['BTC/USDT']['last'],
         'volume': parseFloat(tickerData['BitTrex']['BTC/USDT']['volume'])
       };
+
       // Bitfinex rate
       var bitfinexObj = {
         'market': 'Bitfinex',
-        'price': tickerData['Bitfinex']['BTC/USD']['last'],
-        'volume': parseFloat(tickerData['Bitfinex']['BTC/USD']['volume'])
+        'price': (tickerData['Bitfinex']['BTC/USD'] !== undefined) ? tickerData['Bitfinex']['BTC/USD']['last'] : 0,
+        'volume': (tickerData['Bitfinex']['BTC/USD'] !== undefined) ? parseFloat(tickerData['Bitfinex']['BTC/USD']['volume']) : 0
       };
-      // Kraken rate
-      // var krakenObj = {
-      //   'market': 'Kraken',
-      //   'price': tickerData['Kraken']['XBT/USD']['last'],
-      //   'volume': parseFloat(tickerData['Kraken']['XBT/USD']['volume'])
-      // };
       
       tickers['markets'].push(bitstampObj);
       tickers['markets'].push(bittrexObj);
       tickers['markets'].push(bitfinexObj);
-      // tickers['markets'][4] = krakenObj;
       console.log('Avail ticker done');
     
       callback(null);
     },
-    // function(callback){
-    //   var bitfinexObj = {};
-        
-    //   link = "https://api.bitfinex.com/v1/pubticker/btcusd";
-    //   request.get(link, function(error, bitfinexResponse, body){
-    //     if(error){
-    //       callback(error, null);
-    //     }
-        
-    //     var market = tickers['markets'];
-        
-    //     if(bitfinexResponse.statusCode == 200){
-    //       rates = JSON.parse(body);
-          
-    //       bitfinexObj = {
-    //         'market': 'Bitfinex',
-    //         'price': rates.last_price,
-    //         'volume': parseFloat(rates.volume)
-    //       };
-          
-    //       tickers['markets'].push(bitfinexObj);
-    //       console.log('Bitfinex ticker done');
-    //     }
-    //     else{
-    //       tickers['markets'].push(oldData['markets'][10]);
-    //       console.log('Bitfinex ticker empty');
-    //     }
-    //     callback(null);
-    //   });
-    // },
     function(callback){
       var coinroomObj = {};
         
@@ -1000,7 +967,6 @@ router.get('/cron/sellerTicker', function(req, res, next){
       });
     });
   });
-
 
   router.get('/sendEmail', (req, res, next) => {
     var nodemailer = require('nodemailer');
