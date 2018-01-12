@@ -311,19 +311,24 @@ var returnRouter = function(io) {
             }
             if(krakenResponse.statusCode == 200){
               var rates = JSON.parse(body);
-              var rates = rates.result[conversion];
-
-              krakenObj[cmp.conversion] = {
-                'last': rates.c[0],
-                'bid': rates.b[0],
-                'ask': rates.a[0],
-                'high': rates.h[0],
-                'low': rates.l[0],
-                'volume': rates.v[0]
-              };
-                  
-              ticker.Kraken = krakenObj;
-              compvare();
+              if(!rates.error){
+                var rates = rates.result[conversion];
+  
+                krakenObj[cmp.conversion] = {
+                  'last': rates.c[0],
+                  'bid': rates.b[0],
+                  'ask': rates.a[0],
+                  'high': rates.h[0],
+                  'low': rates.l[0],
+                  'volume': rates.v[0]
+                };
+                    
+                ticker.Kraken = krakenObj;
+                compvare();
+              }
+              else{
+                compvare();
+              }
             }
             else{
               compvare();
@@ -363,7 +368,6 @@ router.get('/sellerTicker', function(req, res, next){
           tickers = rates['ticker'];
           tickers['markets'] = tickers['markets'].splice(2);
 
-          // console.log(tickers);
           console.log('seller rates found');
         }
         else{
