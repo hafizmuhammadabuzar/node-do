@@ -311,8 +311,8 @@ var returnRouter = function(io) {
             }
             if(krakenResponse.statusCode == 200){
               var rates = JSON.parse(body);
-              if(!rates.error){
-                var rates = rates.result[conversion];
+              if(rates.result){
+                rates = rates.result[conversion];
   
                 krakenObj[cmp.conversion] = {
                   'last': rates.c[0],
