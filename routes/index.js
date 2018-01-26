@@ -372,6 +372,7 @@ router.get('/sellerTicker', function(req, res, next){
           console.log('seller rates found');
         }
         else{
+          tickers['markets'] = [];
           console.log('seller rates not found');
         }
         callback(null);
@@ -379,6 +380,8 @@ router.get('/sellerTicker', function(req, res, next){
     },
     function(callback){
       // var availObj = {};
+
+      console.log(tickers);
 
       var siteTicker = fs.readFileSync('public/data/tickers.json');  
       var tickerData = JSON.parse(siteTicker);
