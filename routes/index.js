@@ -359,11 +359,12 @@ router.get('/sellerTicker', function(req, res, next){
         
       link = "https://api.cryptonator.com/api/full/btc-usd";
       request.get(link, function(error, response, body){
-        if(error){
-          callback(error, null);
-        }
+        // if(error){
+        //   callback(error, null);
+        // }
         
-        if(response.statusCode == 200){
+        console.log(response);
+        if(response !== undefined && response.statusCode == 200){
           var rates = JSON.parse(body);
           tickers = rates['ticker'];
           tickers['markets'] = tickers['markets'].splice(2);
